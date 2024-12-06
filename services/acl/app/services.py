@@ -6,32 +6,41 @@ from utils import validate_otp
 
 
 class AuthService(AuthServiceServicer):
-    async def SendOtp(self, request, context):
+    async def SendOtp(self, request, context) -> NoTokenResponse:
         try:
             await read_accout_by_phone_number(request.phone_number)
             return NoTokenResponse(success=True, message="Verify OTP")
         except ValueError:
             return NoTokenResponse(success=False, message="Phone number already exists")
 
-    async def Register(self, request, context):
+    async def Register(self, request, context) -> TokenResponse:
         try:
             if validate_otp(request.otp):
                 account = await create_account(request.phone_number, request.name)
                 token = create_token(account)
                 return TokenResponse(success=True, message="Account created", token=token)
             else:
-                return NoTokenResponse(success=False, message="Invalid OTP")
-        except ValueError:
-            return NoTokenResponse(success=False, message="Phone number already exists")
+                print(f"Invalid OTP: {request.otp}")
+                raise ValueError("Invalid OTP")
+        except ValueError as e:
+            return TokenResponse(success=False, message=e.args[0], token="")
 
-    async def Login(self, request, context):
-        account = await read_accout_by_phone_number(request.phone_number)
-        if not account:
-            return NoTokenResponse(success=False, message="Phone number does not exist")
-        token = create_token(account)
-        return TokenResponse(success=True, message="Logged in", token=token)
+    async def Login(self, request, context) -> TokenResponse:
+        try:
+            account = await read_accout_by_phone_number(request.phone_number)
+            if not account:
+                raise ValueError("Phone number does not exist")
 
-    async def Validate(self, request, context):
+            if not validate_otp(request.otp):
+                print(f"Invalid OTP: {request.otp}")
+                raise ValueError("Invalid OTP")
+
+            token = create_token(account)
+            return TokenResponse(success=True, message="Logged in", token=token)
+        except ValueError as e:
+            return TokenResponse(success=False, message=e.args[0], token="")
+
+    async def Validate(self, request, context) -> ValidateResponse:
         try:
             decode_token(request.token)
             return ValidateResponse(permissions=["read", "write"])
