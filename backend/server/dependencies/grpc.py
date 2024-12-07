@@ -9,7 +9,7 @@ from server.schemas.requests.auth import LoginRequest, RegisterRequest
 
 class AuthClient:
     def __init__(self):
-        self.channel = grpc.insecure_channel(f"{settings.AUTH_GRPC_HOST}:{settings.AUTH_GRPC_PORT}")
+        self.channel = grpc.insecure_channel(f"{settings.AUTH_SERVICE_HOST}:{settings.AUTH_SERVICE_PORT}")
         self.stub = auth_pb2_grpc.AuthServiceStub(self.channel)
 
     def send_otp(self, phone_number: str) -> dict:

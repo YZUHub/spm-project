@@ -9,8 +9,8 @@ class AppConfig(BaseSettings):
     API_PREFIX: str = "/api"
 
     # Auth grpc service settings
-    AUTH_GRPC_HOST: str
-    AUTH_GRPC_PORT: int
+    AUTH_SERVICE_HOST: str
+    AUTH_SERVICE_PORT: int
 
     model_config = SettingsConfigDict(
         env_file_encoding="utf-8",
