@@ -4,9 +4,6 @@ from urllib.request import urlretrieve
 
 import pandas as pd
 
-# client = MongoClient('localhost', 27017)
-# db = client['SPM']
-
 
 def convert_to_int(x):
     if isinstance(x, dict):

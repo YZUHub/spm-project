@@ -1,4 +1,5 @@
 import json
+import os
 
 import jsonlines
 import pandas as pd
@@ -6,7 +7,7 @@ from pymongo import MongoClient
 
 from schemas import Building, Floor, Property, Owner, Unit
 
-client = MongoClient('localhost', 27017)
+client = MongoClient(os.getenv("MONGO_URI"))
 db = client['SPM']
 
 
