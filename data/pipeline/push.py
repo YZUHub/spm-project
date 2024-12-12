@@ -139,7 +139,7 @@ def prepare_unit_valuations(unit, index):
 
     for i in index:
         if i["date"].split("-")[1] in {"01", "04", "07", "10"} and i["date"].split("-")[0] != "2003":
-            val = {**unit, "date": i["date"]}
+            val = {**unit, "date": i["date"], "index": i["index"]}
             for field in fields:
                 if unit[field]:
                     val[field] = unit[field] / index[-1]["index"] * i["index"]
@@ -155,10 +155,15 @@ def prepare_valuation_data():
         units = json.loads(reader.read())
 
     with open("static/processed/index-data.json") as reader:
-        index_data = json.loads(reader.read())
+        indexes = json.loads(reader.read())
+
+    index_data = {}
+    for index in indexes:
+        if index["index_id"]:
+            index_data[index["index_id"]] = index["index_data"]
 
     for unit in units:
         if unit["index_id"]:
-            index_id = str(int(unit["index_id"]))
+            index_id = unit["index_id"]
             index = index_data[index_id]
             prepare_unit_valuations(unit, index)
