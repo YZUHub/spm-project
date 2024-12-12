@@ -1,4 +1,5 @@
 import json
+from datetime import date
 
 import joblib
 
@@ -13,6 +14,30 @@ class ValuationService(ValuationServiceServicer):
         super().__init__()
         self.model = joblib.load("models/valuation.pkl")
         self.features = ["floor_number", "floors", "bta", "bra", "prom", "rooms", "bedrooms", "bathrooms", "wcs", "nearest_train_station_distance", "nearest_bus_station_distance", "nearest_ferry_terminal_distance", "nearest_tram_station_distance", "nearest_underground_station_distance", "nearest_airport_distance", "nearest_kindergartens_distance", "nearest_elementary_middle_school_distance", "nearest_high_school_distance", "nearest_fire_station_distance", "in_beach_zone", "lat", "lon", "year", "month"]
+        self.valuation_types = ["rental_valuation", "rental_model_valuation", "index_valuation", "comparables_valuation", "listing_valuation", "transaction_valuation"]
+
+        with open("models/valuation-rates.json") as reader:
+            rates = json.loads(reader.read())
+
+        self.valuation_rates = {}
+        for rate in rates:
+            self.valuation_rates[rate["index_id"]] = {key: rate[f"{key}_rate"] for key in self.valuation_types}
+
+    def calculate_valuations(self, index_data: list[dict]) -> list[dict]:
+        today = date.today()
+        year = today.year
+        inflation_rate = 0.03
+        valuations = []
+
+        for index in index_data:
+            inflation_parameter = (index["year"] - year) * inflation_rate
+            index["index"] = index["index"] * (1 + inflation_parameter)
+
+            valuation = {**index}
+            for key in self.valuation_types:
+                valuation[key] = index["index"] * self.valuation_rates[index["index_id"]][key]
+            valuations.append(valuation)
+        return valuations
 
     async def GetPropertyValuation(self, request, context) -> ValuationResponse:
         client = RealestateClient()
@@ -20,7 +45,8 @@ class ValuationService(ValuationServiceServicer):
         X = convert_data(units, request.date)
         y = self.model.predict(X[self.features])
         X["index"] = y
-        return ValuationResponse(valuations=json.dumps(X[["unit_id", "year", "month", "index"]].to_dict(orient="records")))
+        valuations = self.calculate_valuations(X[["unit_id", "year", "month", "index", "index_id"]].to_dict(orient="records"))
+        return ValuationResponse(valuations=json.dumps(valuations))
 
     async def GetUnitValuation(self, request, context) -> ValuationResponse:
         client = RealestateClient()
@@ -28,4 +54,5 @@ class ValuationService(ValuationServiceServicer):
         X = convert_data([unit], request.date)
         y = self.model.predict(X[self.features])
         X["index"] = y
-        return ValuationResponse(valuations=json.dumps(X[["unit_id", "year", "month", "index"]].to_dict(orient="records")))
+        valuations = self.calculate_valuations(X[["unit_id", "year", "month", "index", "index_id"]].to_dict(orient="records"))
+        return ValuationResponse(valuations=json.dumps(valuations))
