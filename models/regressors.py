@@ -11,8 +11,8 @@ from xgboost import XGBRegressor
 
 
 class TimeseriesSplitter(BaseCrossValidator):
-    def __init__(self, n_splits: int = 3):
-        self.validation_folds = [[2014, 2016], [2017, 2019], [2020, 2022]]
+    def __init__(self, n_splits: int = 5):
+        self.validation_folds = [[2013, 2014], [2015, 2016], [2017, 2018], [2019, 2020], [2021, 2022]]
         self.n_splits = n_splits
 
     def split(self, X: pd.DataFrame, y: pd.Series, groups: None = None) -> Iterator[tuple[np.ndarray, np.ndarray]]:
@@ -54,7 +54,8 @@ class Regressor(ABC):
         print(f"Successfully split data into train and test sets with shapes {X_train.shape = }, {X_test.shape = }")
         return X_train, X_test, y_train, y_test
 
-    def evaluate_model(self, y_true: pd.Series, y_pred: np.ndarray) -> dict:
+    @staticmethod
+    def evaluate_model(y_true: pd.Series, y_pred: np.ndarray) -> dict:
         return {
             'MSE': mean_squared_error(y_true, y_pred),
             'RMSE': np.sqrt(mean_squared_error(y_true, y_pred)),
@@ -79,40 +80,34 @@ class Regressor(ABC):
 class CatBoost(Regressor):
     def __init__(self):
         super().__init__()
-        self.regressor = CatBoostRegressor(verbose=False, random_state=42)
+        self.regressor = CatBoostRegressor(verbose=False, random_state=42, learning_rate=0.1, depth=3, n_estimators=200, l2_leaf_reg=3, max_bin=251)
 
     def get_grid_params(self) -> dict:
         return {
-            'iterations': [100, 200],
-            'learning_rate': [0.01, 0.05],
-            'depth': [4, 6],
-            # 'l2_leaf_reg': [3, 5],
+            # 'model_size_reg': [0.1, 0.15, 0.2, 0.25],
         }
 
 
 class LightGBM(Regressor):
     def __init__(self):
         super().__init__()
-        self.regressor = LGBMRegressor(random_state=42, verbose=-1)
+        self.regressor = LGBMRegressor(random_state=42, verbose=-1, max_depth=3, n_estimators=200, learning_rate=0.125, max_bin=325)
 
     def get_grid_params(self) -> dict:
         return {
-            'n_estimators': [100, 200],
-            'learning_rate': [0.01, 0.05],
-            'max_depth': [4, 6],
-            # 'num_leaves': [31, 63],
+            # 'num_leaves': [5, 7, 9],
+            # 'boosting_type': ['gbdt', 'goss'],
         }
 
 
 class XGBoost(Regressor):
     def __init__(self):
         super().__init__()
-        self.regressor = XGBRegressor(tree_method="hist", random_state=42)
+        self.regressor = XGBRegressor(tree_method="hist", random_state=42, max_depth=3, learning_rate=0.08, n_estimators=250, min_child_weight=5)
 
     def get_grid_params(self) -> dict:
         return {
-            'n_estimators': [100, 200],
-            'learning_rate': [0.01, 0.05],
-            'max_depth': [4, 6],
-            # 'min_child_weight': [1, 3, 5],
+            # 'grow_policy': ['depthwise', 'lossguide'],
+            # 'max_bin': [250, 290, 300, 310, 325, 350],
+            # 'max_leaves': [5, 7, 9],
         }
