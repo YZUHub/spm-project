@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package realestate;
+
+message RangeQuery {
+    float min = 1;
+    float max = 2;
+}
+
+message Geometry {
+    repeated float coordinates = 1;
+}
+
+message SinglePropertyRequest {
+    string property_id_nma = 1;
+}
+
+message FilterPropertyRequest {
+    RangeQuery area = 1;
+    int32 page = 2;
+}
+
+message SingleUnitRequest {
+    int64 unit_id = 1;
+}
+
+message Response {
+    string data = 1;
+}
+
+service PropertyService {
+    rpc SearchProperties(FilterPropertyRequest) returns (Response);
+    rpc GetProperty(SinglePropertyRequest) returns (Response);
+
+    rpc GetPropertyUnits(SinglePropertyRequest) returns (Response);
+    rpc GetUnit(SingleUnitRequest) returns (Response);
+}
