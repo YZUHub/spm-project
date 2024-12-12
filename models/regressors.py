@@ -31,8 +31,6 @@ class Regressor(ABC):
         self.regressor = None
         self.test_years = [2023, 2024]
         self.cv_splitter = TimeseriesSplitter()
-        self.best_model = None
-        self.cv_results = None
 
     @abstractmethod
     def get_grid_params(self) -> dict:
