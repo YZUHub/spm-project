@@ -54,7 +54,7 @@ async def read_property_units(property_id_nma: str, page: int | None = None) -> 
         return await Unit.find(query).project(schemas.Unit).skip((page - 1) * 20).limit(20).to_list()
     else:
         query["property_id_nma_main"] = property_id_nma
-        return await Unit.find(query).project(schemas.Unit).skip((page - 1) * 20).limit(20).to_list()
+        return await Unit.find(query).project(schemas.Unit).to_list()
 
 
 async def count_property_units(property_id_nma: str, page: int | None = None) -> int:

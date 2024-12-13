@@ -49,6 +49,4 @@ service PropertyService {
 
     rpc GetOwnedProperties(OwnedItemsRequest) returns (Response);
     rpc CountOwnedProperties(OwnedItemsRequest) returns (Response);
-    rpc GetOwnedUnits(OwnedItemsRequest) returns (Response);
-    rpc CountOwnedUnits(OwnedItemsRequest) returns (Response);
 }
