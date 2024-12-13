@@ -170,3 +170,22 @@ class PropertyDetail(Property):
         if not self.units:
             self.units = None
         return self
+
+
+class Ad(BaseModel):
+    id: str
+    title: str
+    description: str
+    address: str
+    property_id_nma: str
+    price: float
+    type: str
+    status: str
+    phone_number: str
+    listed_by: str
+
+    @model_validator(mode="before")
+    @classmethod
+    def fix_id(cls, values):
+        values["id"] = str(values["id"])
+        return values

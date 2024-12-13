@@ -2,9 +2,27 @@ import json
 
 import grpc
 
+from pb.ads_pb2 import FilterAdsRequest, MultipleAdsResponse, RealEstateAd, SingleAdRequest, StatusResponse
+from pb.ads_pb2_grpc import AdServiceServicer
 from pb.properties_pb2 import Response
 from pb.properties_pb2_grpc import PropertyServiceServicer
-from repositories import count_properties, count_property_units, get_owned_properties, count_owned_properties, read_property_units, read_single_property, read_single_unit, search_properties
+from repositories import (
+    check_permission,
+    count_properties,
+    count_property_units,
+    create_ad,
+    delete_ad,
+    get_ads,
+    get_owned_properties,
+    count_owned_properties,
+    read_property_owner,
+    read_property_units,
+    read_single_ad,
+    read_single_property,
+    read_single_unit,
+    search_properties,
+    update_ad,
+)
 
 
 class PropertyService(PropertyServiceServicer):
@@ -72,3 +90,84 @@ class PropertyService(PropertyServiceServicer):
     async def CountOwnedProperties(self, request, context):
         data = await count_owned_properties(owner_id=request.owner_id)
         return Response(data=json.dumps({"count": data}))
+
+
+class AdService(AdServiceServicer):
+    async def CreateAd(self, request, context) -> RealEstateAd:
+        owner = await read_property_owner(owner_id=request.phone_number, property_id_nma=request.property_id_nma)
+        if not owner:
+            context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+            context.set_details("Owner does not have permission to create ad for this property")
+            return RealEstateAd()
+
+        ad = await create_ad(
+            title=request.title,
+            description=request.description,
+            address=request.address,
+            property_id_nma=request.property_id_nma,
+            price=request.price,
+            type=request.type,
+            phone_number=owner.phone_number,
+            listed_by=owner.name,
+        )
+        return RealEstateAd(**ad.model_dump())
+
+    async def GetAd(self, request, context) -> RealEstateAd:
+        ad_id = request.id
+        ad = await read_single_ad(ad_id)
+
+        if not ad:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details("Ad not found")
+            return RealEstateAd()
+
+        return RealEstateAd(**ad.model_dump())
+
+    async def GetAds(self, request, context) -> MultipleAdsResponse:
+        ads = await get_ads(
+            property_id_nma=request.property_id_nma,
+            type=request.type,
+            status=request.status,
+            min_price=request.min_price,
+            max_price=request.max_price,
+            page=request.page,
+        )
+
+        data = []
+        for ad in ads:
+            data.append(RealEstateAd(**ad.model_dump(exclude_none=True)))
+
+        return MultipleAdsResponse(ads=data)
+
+    async def UpdateAd(self, request, context) -> RealEstateAd:
+        has_permission = await check_permission(owner_id=request.phone_number, property_id_nma=request.property_id_nma)
+        if not has_permission:
+            context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+            context.set_details("Owner does not have permission to update ad for this property")
+            return RealEstateAd()
+        print(request)
+        
+        updated_ad = await update_ad(
+            ad_id=request.id,
+            title=request.title,
+            description=request.description,
+            address=request.address,
+            price=request.price,
+            type=request.type,
+            status=request.status,
+        )
+        return RealEstateAd(**updated_ad.model_dump())
+
+    async def DeleteAd(self, request, context) -> StatusResponse:
+        has_permission = await check_permission(owner_id=request.phone_number, property_id_nma=request.property_id_nma)
+        if not has_permission:
+            context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+            context.set_details("Owner does not have permission to delete ad for this property")
+            return StatusResponse(success=False)
+
+        response = await delete_ad(ad_id=request.id)
+        return StatusResponse(success=response)
+
+    async def HasWriteAccess(self, request, context) -> StatusResponse:
+        has_permission = await check_permission(owner_id=request.phone_number, property_id_nma=request.property_id_nma)
+        return StatusResponse(success=has_permission)

@@ -1,7 +1,7 @@
 from beanie.operators import In
 
 import schemas
-from models import Owner, Property, Unit
+from models import Ad, Owner, Property, Unit
 from pb.properties_pb2 import RangeQuery
 
 
@@ -95,3 +95,114 @@ async def count_owned_properties(owner_id: str) -> int:
     }
     owned_properties = await Owner.find(query).count()
     return owned_properties
+
+
+async def check_permission(owner_id: str, property_id_nma: str) -> bool:
+    query = {
+        "phone_number": owner_id,
+        "property_id_nma": property_id_nma,
+    }
+    return await Owner.find(query).count() > 0
+
+
+async def read_property_owner(owner_id: str, property_id_nma: str) -> schemas.Owner:
+    query = {
+        "phone_number": owner_id,
+        "property_id_nma": property_id_nma,
+    }
+    print(query)
+    owner = await Owner.find(query).project(schemas.Owner).first_or_none()
+    print(owner)
+    return owner
+
+
+async def create_ad(
+    title: str,
+    description: str,
+    address: str,
+    price: float,
+    property_id_nma: str,
+    type: str,
+    phone_number: str,
+    listed_by: str,
+) -> schemas.Ad:
+    ad = Ad(
+        title=title,
+        description=description,
+        address=address,
+        price=price,
+        property_id_nma=property_id_nma,
+        type=type,
+        phone_number=phone_number,
+        listed_by=listed_by,
+        status="live",
+    )
+    await ad.insert()
+    return schemas.Ad(**ad.model_dump())
+
+
+async def read_single_ad(ad_id: str) -> schemas.Ad:
+    ad = await Ad.get(ad_id)
+    return schemas.Ad(**ad.model_dump())
+
+
+async def get_ads(
+    property_id_nma: str | None = None,
+    type: str | None = None,
+    status: str | None = None,
+    min_price: float | None = None,
+    max_price: float | None = None,
+    page: int = 1,
+) -> list[schemas.Ad]:
+    query = {}
+
+    if property_id_nma:
+        query["property_id_nma"] = property_id_nma
+    if type:
+        query["type"] = type
+    if status:
+        query["status"] = status
+
+    if min_price or max_price:
+        query["price"] = {}
+        if min_price:
+            query["price"]["$gte"] = min_price
+        if max_price:
+            query["price"]["$lte"] = max_price
+
+    ads = await Ad.find(query).skip((page - 1) * 20).limit(20).to_list()
+    return [schemas.Ad(**ad.model_dump()) for ad in ads]
+
+
+async def update_ad(
+    ad_id: str,
+    title: str | None = None,
+    description: str | None = None,
+    address: str | None = None,
+    price: float | None = None,
+    type: str | None = None,
+    status: str | None = None,
+) -> schemas.Ad:
+    ad = await Ad.get(ad_id)
+
+    if title:
+        ad.title = title
+    if description:
+        ad.description = description
+    if address:
+        ad.address = address
+    if price:
+        ad.price = price
+    if type:
+        ad.type = type
+    if status:
+        ad.status = status
+
+    await ad.save()
+    return schemas.Ad(**ad.model_dump())
+
+
+async def delete_ad(ad_id: str) -> bool:
+    ad = await Ad.get(ad_id)
+    await ad.delete()
+    return True
