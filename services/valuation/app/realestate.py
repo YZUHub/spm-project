@@ -12,7 +12,7 @@ class RealestateClient:
         self.stub = properties_pb2_grpc.PropertyServiceStub(self.channel)
 
     def get_property_units(self, property_id_nma: int) -> list:
-        response = self.stub.GetPropertyUnits(properties_pb2.SinglePropertyRequest(property_id_nma=property_id_nma))
+        response = self.stub.GetPropertyUnits(properties_pb2.PropertyUnitsRequest(property_id_nma=property_id_nma))
         return json.loads(response.data)
 
     def get_unit(self, unit_id: int) -> dict:
