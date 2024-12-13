@@ -1,4 +1,5 @@
 import json
+import random
 from datetime import date
 
 import joblib
@@ -26,7 +27,7 @@ class ValuationService(ValuationServiceServicer):
     def calculate_valuations(self, index_data: list[dict]) -> list[dict]:
         today = date.today()
         year = today.year
-        inflation_rate = 0.03
+        inflation_rate = 0.05
         valuations = []
 
         for index in index_data:
@@ -35,7 +36,8 @@ class ValuationService(ValuationServiceServicer):
 
             valuation = {**index}
             for key in self.valuation_types:
-                valuation[key] = index["index"] * self.valuation_rates[index["index_id"]][key]
+                disturbance = random.uniform(-0.005, 0.005)
+                valuation[key] = index["index"] * self.valuation_rates[index["index_id"]][key] * (1 + disturbance)
             valuations.append(valuation)
         return valuations
 

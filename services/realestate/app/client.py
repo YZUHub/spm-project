@@ -21,12 +21,19 @@ def run():
         # Print the response
         print("SearchProperties response received")
         
+        response = stub.CountProperties(request)
+        print("CountProperties response received", response)
+        
         request = pb.properties_pb2.SinglePropertyRequest(property_id_nma="0301-27-493-0-0")
         response = stub.GetProperty(request)
         print("GetProperty response received")
         
+        request = pb.properties_pb2.PropertyUnitsRequest(property_id_nma="0301-27-493-0-0", page=1)
         response = stub.GetPropertyUnits(request)
         print("GetPropertyUnits response received")
+        
+        response = stub.CountPropertyUnits(request)
+        print("CountPropertyUnits response received", response)
         
         request = pb.properties_pb2.SingleUnitRequest(unit_id=288292015)
         response = stub.GetUnit(request)

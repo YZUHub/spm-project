@@ -39,6 +39,11 @@ class PropertyServiceStub(object):
                 request_serializer=properties__pb2.FilterPropertyRequest.SerializeToString,
                 response_deserializer=properties__pb2.Response.FromString,
                 _registered_method=True)
+        self.CountProperties = channel.unary_unary(
+                '/realestate.PropertyService/CountProperties',
+                request_serializer=properties__pb2.FilterPropertyRequest.SerializeToString,
+                response_deserializer=properties__pb2.Response.FromString,
+                _registered_method=True)
         self.GetProperty = channel.unary_unary(
                 '/realestate.PropertyService/GetProperty',
                 request_serializer=properties__pb2.SinglePropertyRequest.SerializeToString,
@@ -46,12 +51,37 @@ class PropertyServiceStub(object):
                 _registered_method=True)
         self.GetPropertyUnits = channel.unary_unary(
                 '/realestate.PropertyService/GetPropertyUnits',
-                request_serializer=properties__pb2.SinglePropertyRequest.SerializeToString,
+                request_serializer=properties__pb2.PropertyUnitsRequest.SerializeToString,
+                response_deserializer=properties__pb2.Response.FromString,
+                _registered_method=True)
+        self.CountPropertyUnits = channel.unary_unary(
+                '/realestate.PropertyService/CountPropertyUnits',
+                request_serializer=properties__pb2.PropertyUnitsRequest.SerializeToString,
                 response_deserializer=properties__pb2.Response.FromString,
                 _registered_method=True)
         self.GetUnit = channel.unary_unary(
                 '/realestate.PropertyService/GetUnit',
                 request_serializer=properties__pb2.SingleUnitRequest.SerializeToString,
+                response_deserializer=properties__pb2.Response.FromString,
+                _registered_method=True)
+        self.GetOwnedProperties = channel.unary_unary(
+                '/realestate.PropertyService/GetOwnedProperties',
+                request_serializer=properties__pb2.OwnedItemsRequest.SerializeToString,
+                response_deserializer=properties__pb2.Response.FromString,
+                _registered_method=True)
+        self.CountOwnedProperties = channel.unary_unary(
+                '/realestate.PropertyService/CountOwnedProperties',
+                request_serializer=properties__pb2.OwnedItemsRequest.SerializeToString,
+                response_deserializer=properties__pb2.Response.FromString,
+                _registered_method=True)
+        self.GetOwnedUnits = channel.unary_unary(
+                '/realestate.PropertyService/GetOwnedUnits',
+                request_serializer=properties__pb2.OwnedItemsRequest.SerializeToString,
+                response_deserializer=properties__pb2.Response.FromString,
+                _registered_method=True)
+        self.CountOwnedUnits = channel.unary_unary(
+                '/realestate.PropertyService/CountOwnedUnits',
+                request_serializer=properties__pb2.OwnedItemsRequest.SerializeToString,
                 response_deserializer=properties__pb2.Response.FromString,
                 _registered_method=True)
 
@@ -60,6 +90,12 @@ class PropertyServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def SearchProperties(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def CountProperties(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -77,7 +113,37 @@ class PropertyServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def CountPropertyUnits(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def GetUnit(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetOwnedProperties(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def CountOwnedProperties(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetOwnedUnits(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def CountOwnedUnits(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -91,6 +157,11 @@ def add_PropertyServiceServicer_to_server(servicer, server):
                     request_deserializer=properties__pb2.FilterPropertyRequest.FromString,
                     response_serializer=properties__pb2.Response.SerializeToString,
             ),
+            'CountProperties': grpc.unary_unary_rpc_method_handler(
+                    servicer.CountProperties,
+                    request_deserializer=properties__pb2.FilterPropertyRequest.FromString,
+                    response_serializer=properties__pb2.Response.SerializeToString,
+            ),
             'GetProperty': grpc.unary_unary_rpc_method_handler(
                     servicer.GetProperty,
                     request_deserializer=properties__pb2.SinglePropertyRequest.FromString,
@@ -98,12 +169,37 @@ def add_PropertyServiceServicer_to_server(servicer, server):
             ),
             'GetPropertyUnits': grpc.unary_unary_rpc_method_handler(
                     servicer.GetPropertyUnits,
-                    request_deserializer=properties__pb2.SinglePropertyRequest.FromString,
+                    request_deserializer=properties__pb2.PropertyUnitsRequest.FromString,
+                    response_serializer=properties__pb2.Response.SerializeToString,
+            ),
+            'CountPropertyUnits': grpc.unary_unary_rpc_method_handler(
+                    servicer.CountPropertyUnits,
+                    request_deserializer=properties__pb2.PropertyUnitsRequest.FromString,
                     response_serializer=properties__pb2.Response.SerializeToString,
             ),
             'GetUnit': grpc.unary_unary_rpc_method_handler(
                     servicer.GetUnit,
                     request_deserializer=properties__pb2.SingleUnitRequest.FromString,
+                    response_serializer=properties__pb2.Response.SerializeToString,
+            ),
+            'GetOwnedProperties': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetOwnedProperties,
+                    request_deserializer=properties__pb2.OwnedItemsRequest.FromString,
+                    response_serializer=properties__pb2.Response.SerializeToString,
+            ),
+            'CountOwnedProperties': grpc.unary_unary_rpc_method_handler(
+                    servicer.CountOwnedProperties,
+                    request_deserializer=properties__pb2.OwnedItemsRequest.FromString,
+                    response_serializer=properties__pb2.Response.SerializeToString,
+            ),
+            'GetOwnedUnits': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetOwnedUnits,
+                    request_deserializer=properties__pb2.OwnedItemsRequest.FromString,
+                    response_serializer=properties__pb2.Response.SerializeToString,
+            ),
+            'CountOwnedUnits': grpc.unary_unary_rpc_method_handler(
+                    servicer.CountOwnedUnits,
+                    request_deserializer=properties__pb2.OwnedItemsRequest.FromString,
                     response_serializer=properties__pb2.Response.SerializeToString,
             ),
     }
@@ -132,6 +228,33 @@ class PropertyService(object):
             request,
             target,
             '/realestate.PropertyService/SearchProperties',
+            properties__pb2.FilterPropertyRequest.SerializeToString,
+            properties__pb2.Response.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def CountProperties(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/realestate.PropertyService/CountProperties',
             properties__pb2.FilterPropertyRequest.SerializeToString,
             properties__pb2.Response.FromString,
             options,
@@ -186,7 +309,34 @@ class PropertyService(object):
             request,
             target,
             '/realestate.PropertyService/GetPropertyUnits',
-            properties__pb2.SinglePropertyRequest.SerializeToString,
+            properties__pb2.PropertyUnitsRequest.SerializeToString,
+            properties__pb2.Response.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def CountPropertyUnits(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/realestate.PropertyService/CountPropertyUnits',
+            properties__pb2.PropertyUnitsRequest.SerializeToString,
             properties__pb2.Response.FromString,
             options,
             channel_credentials,
@@ -214,6 +364,114 @@ class PropertyService(object):
             target,
             '/realestate.PropertyService/GetUnit',
             properties__pb2.SingleUnitRequest.SerializeToString,
+            properties__pb2.Response.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetOwnedProperties(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/realestate.PropertyService/GetOwnedProperties',
+            properties__pb2.OwnedItemsRequest.SerializeToString,
+            properties__pb2.Response.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def CountOwnedProperties(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/realestate.PropertyService/CountOwnedProperties',
+            properties__pb2.OwnedItemsRequest.SerializeToString,
+            properties__pb2.Response.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetOwnedUnits(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/realestate.PropertyService/GetOwnedUnits',
+            properties__pb2.OwnedItemsRequest.SerializeToString,
+            properties__pb2.Response.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def CountOwnedUnits(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/realestate.PropertyService/CountOwnedUnits',
+            properties__pb2.OwnedItemsRequest.SerializeToString,
             properties__pb2.Response.FromString,
             options,
             channel_credentials,
