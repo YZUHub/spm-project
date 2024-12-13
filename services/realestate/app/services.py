@@ -4,7 +4,7 @@ import grpc
 
 from pb.properties_pb2 import Response
 from pb.properties_pb2_grpc import PropertyServiceServicer
-from repositories import count_properties, count_property_units, read_property_units, read_single_property, read_single_unit, search_properties
+from repositories import count_properties, count_property_units, get_owned_properties, count_owned_properties, read_property_units, read_single_property, read_single_unit, search_properties
 
 
 class PropertyService(PropertyServiceServicer):
@@ -44,7 +44,7 @@ class PropertyService(PropertyServiceServicer):
         return Response(data=json.dumps(data))
 
     async def CountPropertyUnits(self, request, context):
-        data = await count_property_units(property_id_nma=request.property_id_nma)
+        data = await count_property_units(property_id_nma=request.property_id_nma, page=request.page)
         return Response(data=json.dumps({"count": data}))
 
     async def GetUnit(self, request, context) -> Response:
@@ -58,3 +58,17 @@ class PropertyService(PropertyServiceServicer):
 
         unit_data = unit.model_dump_json(exclude_none=True)
         return Response(data=unit_data)
+
+    async def GetOwnedProperties(self, request, context) -> Response:
+        owner_id = request.owner_id
+        properties = await get_owned_properties(owner_id, request.page)
+
+        data = []
+        for property in properties:
+            data.append(property.model_dump(exclude_none=True))
+
+        return Response(data=json.dumps(data))
+
+    async def CountOwnedProperties(self, request, context):
+        data = await count_owned_properties(owner_id=request.owner_id)
+        return Response(data=json.dumps({"count": data}))

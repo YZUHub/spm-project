@@ -24,11 +24,11 @@ def run():
         response = stub.CountProperties(request)
         print("CountProperties response received", response)
         
-        request = pb.properties_pb2.SinglePropertyRequest(property_id_nma="0301-27-493-0-0")
+        request = pb.properties_pb2.SinglePropertyRequest(property_id_nma="0301-148-303-0-0")
         response = stub.GetProperty(request)
         print("GetProperty response received")
         
-        request = pb.properties_pb2.PropertyUnitsRequest(property_id_nma="0301-27-493-0-0", page=1)
+        request = pb.properties_pb2.PropertyUnitsRequest(property_id_nma="0301-148-303-0-0", page=1)
         response = stub.GetPropertyUnits(request)
         print("GetPropertyUnits response received")
         
@@ -38,6 +38,13 @@ def run():
         request = pb.properties_pb2.SingleUnitRequest(unit_id=288292015)
         response = stub.GetUnit(request)
         print("GetUnit response received")
+        
+        request = pb.properties_pb2.OwnedItemsRequest(owner_id="40008146", page=1)
+        response = stub.GetOwnedProperties(request)
+        print("GetOwnedProperties response received")
+        
+        response = stub.CountOwnedProperties(request)
+        print("CountOwnedProperties response received", response)
 
 if __name__ == "__main__":
     run()

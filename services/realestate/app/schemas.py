@@ -148,14 +148,21 @@ class Property(BaseModel):
     city_district_id: int | None
     city_district_name: str | None
     geometry: PointGeometry
+
+    @model_validator(mode="after")
+    def process(self):
+        if isinstance(self.established_date, datetime):
+            self.established_date = self.established_date.isoformat()
+        return self
+
+
+class PropertyDetail(Property):
     buildings: list[Building] | None = Field(default_factory=list)
     owners: list[Owner] | None = Field(default_factory=list)
     units: list[Unit] | None = Field(default_factory=list)
 
     @model_validator(mode="after")
     def process(self):
-        if isinstance(self.established_date, datetime):
-            self.established_date = self.established_date.isoformat()
         if not self.buildings:
             self.buildings = None
         if not self.owners:
