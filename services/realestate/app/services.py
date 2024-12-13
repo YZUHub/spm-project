@@ -2,7 +2,7 @@ import json
 
 import grpc
 
-from pb.ads_pb2 import FilterAdsRequest, MultipleAdsResponse, RealEstateAd, SingleAdRequest, StatusResponse
+from pb.ads_pb2 import CountResponse, MultipleAdsResponse, RealEstateAd, StatusResponse
 from pb.ads_pb2_grpc import AdServiceServicer
 from pb.properties_pb2 import Response
 from pb.properties_pb2_grpc import PropertyServiceServicer
@@ -10,6 +10,7 @@ from repositories import (
     check_permission,
     count_properties,
     count_property_units,
+    count_ads,
     create_ad,
     delete_ad,
     get_ads,
@@ -139,13 +140,22 @@ class AdService(AdServiceServicer):
 
         return MultipleAdsResponse(ads=data)
 
+    async def CountAds(self, request, context) -> CountResponse:
+        data = await count_ads(
+            property_id_nma=request.property_id_nma,
+            type=request.type,
+            status=request.status,
+            min_price=request.min_price,
+            max_price=request.max_price,
+        )
+        return CountResponse(count=data)
+
     async def UpdateAd(self, request, context) -> RealEstateAd:
         has_permission = await check_permission(owner_id=request.phone_number, property_id_nma=request.property_id_nma)
         if not has_permission:
             context.set_code(grpc.StatusCode.PERMISSION_DENIED)
             context.set_details("Owner does not have permission to update ad for this property")
             return RealEstateAd()
-        print(request)
         
         updated_ad = await update_ad(
             ad_id=request.id,

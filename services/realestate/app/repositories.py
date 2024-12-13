@@ -77,7 +77,6 @@ async def get_owned_properties(owner_id: str, page: int) -> list[schemas.Propert
         "geometry.coordinates.0": {"$gte": 10.65, "$lte": 10.85},
         "geometry.coordinates.1": {"$gte": 59.95, "$lte": 59.97},
     }
-    print(query)
 
     owned_properties = await Owner.find(query).skip((page - 1) * 20).limit(20).to_list()
     properties = [item.property_id_nma for item in owned_properties]
@@ -111,9 +110,7 @@ async def read_property_owner(owner_id: str, property_id_nma: str) -> schemas.Ow
         "phone_number": owner_id,
         "property_id_nma": property_id_nma,
     }
-    print(query)
     owner = await Owner.find(query).project(schemas.Owner).first_or_none()
-    print(owner)
     return owner
 
 
@@ -173,6 +170,33 @@ async def get_ads(
 
     ads = await Ad.find(query).skip((page - 1) * 20).limit(20).to_list()
     return [schemas.Ad(**ad.model_dump()) for ad in ads]
+
+
+async def count_ads(
+    property_id_nma: str | None = None,
+    type: str | None = None,
+    status: str | None = None,
+    min_price: float | None = None,
+    max_price: float | None = None,
+) -> list[schemas.Ad]:
+    query = {}
+
+    if property_id_nma:
+        query["property_id_nma"] = property_id_nma
+    if type:
+        query["type"] = type
+    if status:
+        query["status"] = status
+
+    if min_price or max_price:
+        query["price"] = {}
+        if min_price:
+            query["price"]["$gte"] = min_price
+        if max_price:
+            query["price"]["$lte"] = max_price
+
+    ads = await Ad.find(query).count()
+    return ads
 
 
 async def update_ad(
