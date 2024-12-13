@@ -20,15 +20,21 @@ services:
       - ./services/acl/.env
     ports:
       - "50051:50051"
-    depends_on:
-      - mongo
 
-  mongo:
-    image: mongo:latest
+  realestate:
+    build:
+      context: ./services/realestate
+      dockerfile: Dockerfile
+    env_file:
+      - ./services/realestate/.env
     ports:
-      - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
+      - "50052:50052"
 
-volumes:
-  mongo-data:
+  valuation:
+    build:
+      context: ./services/valuation
+      dockerfile: Dockerfile
+    env_file:
+      - ./services/valuation/.env
+    ports:
+      - "50053:50053"

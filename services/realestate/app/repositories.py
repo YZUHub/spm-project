@@ -77,6 +77,7 @@ async def get_owned_properties(owner_id: str, page: int) -> list[schemas.Propert
         "geometry.coordinates.0": {"$gte": 10.65, "$lte": 10.85},
         "geometry.coordinates.1": {"$gte": 59.95, "$lte": 59.97},
     }
+    print(query)
 
     owned_properties = await Owner.find(query).skip((page - 1) * 20).limit(20).to_list()
     properties = [item.property_id_nma for item in owned_properties]

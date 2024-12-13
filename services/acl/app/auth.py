@@ -8,7 +8,7 @@ from models import Account
 
 def create_token(account: Account) -> str:
     payload = {
-        "sub": str(account.id),
+        "sub": str(account.phone_number),
         "exp": datetime.now(timezone.utc) + timedelta(minutes=settings.JWT_EXPIRE),
     }
     return jwt.encode(payload, settings.JWT_KEY, algorithm=settings.JWT_ALGORITHM)
