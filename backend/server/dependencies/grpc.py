@@ -7,6 +7,7 @@ from google.protobuf.json_format import MessageToDict
 from server.config import settings
 from server.pb import ads_pb2, ads_pb2_grpc, auth_pb2, auth_pb2_grpc, properties_pb2, properties_pb2_grpc
 from server.schemas.requests.auth import LoginRequest, RegisterRequest
+from server.schemas.requests.ads import CreateAdRequest
 
 
 class AuthClient:
@@ -15,26 +16,38 @@ class AuthClient:
         self.stub = auth_pb2_grpc.AuthServiceStub(self.channel)
 
     def send_otp(self, phone_number: str) -> dict:
-        response = self.stub.SendOtp(auth_pb2.SendOtpRequest(phone_number=phone_number))
-        return MessageToDict(response)
+        try:
+            response = self.stub.SendOtp(auth_pb2.SendOtpRequest(phone_number=phone_number))
+            return MessageToDict(response)
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
 
     def register(self, payload: RegisterRequest) -> dict:
-        response = self.stub.Register(auth_pb2.RegisterRequest(**payload.model_dump()))
-        res = MessageToDict(response)
-        if "success" in res and res["success"]:
-            return res
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=res["message"])
+        try:
+            response = self.stub.Register(auth_pb2.RegisterRequest(**payload.model_dump()))
+            res = MessageToDict(response)
+            if "success" in res and res["success"]:
+                return res
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=res["message"])
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
 
     def login(self, payload: LoginRequest) -> dict:
-        response = self.stub.Login(auth_pb2.LoginRequest(**payload.model_dump()))
-        res = MessageToDict(response)
-        if "success" in res and res["success"]:
-            return res
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=res["message"])
+        try:
+            response = self.stub.Login(auth_pb2.LoginRequest(**payload.model_dump()))
+            res = MessageToDict(response)
+            if "success" in res and res["success"]:
+                return res
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=res["message"])
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
 
     def validate(self, token: str) -> dict:
-        response = self.stub.Validate(auth_pb2.ValidateRequest(token=token))
-        return MessageToDict(response)
+        try:
+            response = self.stub.Validate(auth_pb2.ValidateRequest(token=token))
+            return MessageToDict(response)
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
 
 
 class RealestateClient:
@@ -46,41 +59,148 @@ class RealestateClient:
         self.ads_stub = ads_pb2_grpc.AdServiceStub(self.ads_channel)
 
     def search_properties(self, min_area: float | None, max_area: float | None, page: int = 1) -> dict:
-        payload = {"area": {"min": min_area, "max": max_area}, "page": page}
-        response = self.properties_stub.SearchProperties(properties_pb2.FilterPropertyRequest(**payload))
-        return json.loads(response.data)
+        try:
+            payload = {"area": {"min": min_area, "max": max_area}, "page": page}
+            response = self.properties_stub.SearchProperties(properties_pb2.FilterPropertyRequest(**payload))
+            return json.loads(response.data)
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
 
     def count_properties(self, min_area: float | None, max_area: float | None) -> dict:
-        payload = {"area": {"min": min_area, "max": max_area}}
-        response = self.properties_stub.CountProperties(properties_pb2.FilterPropertyRequest(**payload))
-        return json.loads(response.data)
+        try:
+            payload = {"area": {"min": min_area, "max": max_area}}
+            response = self.properties_stub.CountProperties(properties_pb2.FilterPropertyRequest(**payload))
+            return json.loads(response.data)
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
 
     def get_property(self, property_id_nma: str) -> dict:
-        payload = {"property_id_nma": property_id_nma}
-        response = self.properties_stub.GetProperty(properties_pb2.SinglePropertyRequest(**payload))
-        return json.loads(response.data)
+        try:
+            payload = {"property_id_nma": property_id_nma}
+            response = self.properties_stub.GetProperty(properties_pb2.SinglePropertyRequest(**payload))
+            return json.loads(response.data)
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
 
     def get_property_units(self, property_id_nma: str, page: int = 1) -> dict:
-        payload = {"property_id_nma": property_id_nma, "page": page}
-        response = self.properties_stub.GetPropertyUnits(properties_pb2.PropertyUnitsRequest(**payload))
-        return json.loads(response.data)
+        try:
+            payload = {"property_id_nma": property_id_nma, "page": page}
+            response = self.properties_stub.GetPropertyUnits(properties_pb2.PropertyUnitsRequest(**payload))
+            return json.loads(response.data)
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
 
     def count_property_units(self, property_id_nma: str) -> dict:
-        payload = {"property_id_nma": property_id_nma}
-        response = self.properties_stub.CountPropertyUnits(properties_pb2.PropertyUnitsRequest(**payload))
-        return json.loads(response.data)
+        try:
+            payload = {"property_id_nma": property_id_nma}
+            response = self.properties_stub.CountPropertyUnits(properties_pb2.PropertyUnitsRequest(**payload))
+            return json.loads(response.data)
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
 
     def get_unit(self, unit_id: str) -> dict:
-        payload = {"unit_id": unit_id}
-        response = self.properties_stub.GetUnit(properties_pb2.SingleUnitRequest(**payload))
-        return json.loads(response.data)
+        try:
+            payload = {"unit_id": unit_id}
+            response = self.properties_stub.GetUnit(properties_pb2.SingleUnitRequest(**payload))
+            return json.loads(response.data)
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
 
     def get_owned_properties(self, owner_id: str, page: int = 1) -> dict:
-        payload = {"owner_id": owner_id, "page": page}
-        response = self.properties_stub.GetOwnedProperties(properties_pb2.OwnedItemsRequest(**payload))
-        return json.loads(response.data)
+        try:
+            payload = {"owner_id": owner_id, "page": page}
+            response = self.properties_stub.GetOwnedProperties(properties_pb2.OwnedItemsRequest(**payload))
+            return json.loads(response.data)
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
 
     def count_owned_properties(self, owner_id: str) -> dict:
-        payload = {"owner_id": owner_id}
-        response = self.properties_stub.CountOwnedProperties(properties_pb2.OwnedItemsRequest(**payload))
-        return json.loads(response.data)
+        try:
+            payload = {"owner_id": owner_id}
+            response = self.properties_stub.CountOwnedProperties(properties_pb2.OwnedItemsRequest(**payload))
+            return json.loads(response.data)
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
+
+    def has_write_access(self, owner_id: str, property_id_nma: str) -> bool:
+        try:
+            payload = {"phone_number": owner_id, "property_id_nma": property_id_nma}
+            response = self.properties_stub.HasWriteAccess(properties_pb2.SingleAdRequest(**payload))
+            return response.success
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
+
+    def create_ad(self, payload: CreateAdRequest, owner_id: str) -> dict:
+        try:
+            response = self.ads_stub.CreateAd(ads_pb2.RealEstateAd(**payload.model_dump(), phone_number=owner_id))
+            return MessageToDict(response)
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
+
+    def get_ads(
+        self,
+        property_id_nma: str | None = None,
+        type: str | None = None,
+        status: str | None = None,
+        min_price: float | None = None,
+        max_price: float | None = None,
+        page: int = 1,
+    ) -> list[dict]:
+        try:
+            payload = {
+                "property_id_nma": property_id_nma,
+                "type": type,
+                "status": status,
+                "min_price": min_price,
+                "max_price": max_price,
+                "page": page,
+            }
+
+            response = self.ads_stub.GetAds(ads_pb2.FilterAdsRequest(**payload))
+            return MessageToDict(response).get("ads", [])
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
+
+    def count_ads(
+        self,
+        property_id_nma: str | None = None,
+        type: str | None = None,
+        status: str | None = None,
+        min_price: float | None = None,
+        max_price: float | None = None,
+    ) -> dict:
+        try:
+            payload = {
+                "property_id_nma": property_id_nma,
+                "type": type,
+                "status": status,
+                "min_price": min_price,
+                "max_price": max_price,
+            }
+
+            response = self.ads_stub.CountAds(ads_pb2.FilterAdsRequest(**payload))
+            return MessageToDict(response)
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
+
+    def get_ad(self, ad_id: str) -> dict:
+        try:
+            response = self.ads_stub.GetAd(ads_pb2.SingleAdRequest(id=ad_id))
+            return MessageToDict(response)
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
+
+    def update_ad(self, ad_id: str, payload: CreateAdRequest, owner_id: str, property_id_nma: str) -> dict:
+        try:
+            grpc_payload = {"id": ad_id, **payload.model_dump(exclude_unset=True), "phone_number": owner_id, "property_id_nma": property_id_nma}
+            response = self.ads_stub.UpdateAd(ads_pb2.RealEstateAd(**grpc_payload))
+            return MessageToDict(response)
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
+
+    def delete_ad(self, ad_id: str, owner_id: str, property_id_nma: str) -> dict:
+        try:
+            response = self.ads_stub.DeleteAd(ads_pb2.SingleAdRequest(id=ad_id, phone_number=owner_id, property_id_nma=property_id_nma))
+            return MessageToDict(response)
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())

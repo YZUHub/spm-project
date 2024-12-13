@@ -38,10 +38,15 @@ message StatusResponse {
     bool success = 1;
 }
 
+message CountResponse {
+    int32 count = 1;
+}
+
 service AdService {
     rpc CreateAd(RealEstateAd) returns (RealEstateAd);
     rpc GetAd(SingleAdRequest) returns (RealEstateAd);
     rpc GetAds(FilterAdsRequest) returns (MultipleAdsResponse);
+    rpc CountAds(FilterAdsRequest) returns (CountResponse);
     rpc UpdateAd(RealEstateAd) returns (RealEstateAd);
     rpc DeleteAd(SingleAdRequest) returns (StatusResponse);
     rpc HasWriteAccess(SingleAdRequest) returns (StatusResponse);
