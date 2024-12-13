@@ -12,6 +12,10 @@ class AppConfig(BaseSettings):
     AUTH_SERVICE_HOST: str
     AUTH_SERVICE_PORT: int
 
+    # Realestate grpc service settings
+    REALESTATE_SERVICE_HOST: str
+    REALESTATE_SERVICE_PORT: int
+
     model_config = SettingsConfigDict(
         env_file_encoding="utf-8",
         env_file=".env",

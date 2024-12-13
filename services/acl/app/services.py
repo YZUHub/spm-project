@@ -42,7 +42,7 @@ class AuthService(AuthServiceServicer):
 
     async def Validate(self, request, context) -> ValidateResponse:
         try:
-            decode_token(request.token)
-            return ValidateResponse(permissions=["read", "write"])
+            payload = decode_token(request.token)
+            return ValidateResponse(permissions=[payload.get("sub")])
         except Exception:
-            return ValidateResponse(permissions=["read"])
+            return ValidateResponse(permissions=[])
