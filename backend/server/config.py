@@ -16,6 +16,10 @@ class AppConfig(BaseSettings):
     REALESTATE_SERVICE_HOST: str
     REALESTATE_SERVICE_PORT: int
 
+    # Valuation grpc service settings
+    VALUATION_SERVICE_HOST: str
+    VALUATION_SERVICE_PORT: int
+
     model_config = SettingsConfigDict(
         env_file_encoding="utf-8",
         env_file=".env",

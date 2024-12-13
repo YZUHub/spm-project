@@ -74,6 +74,11 @@ class PropertyServiceStub(object):
                 request_serializer=properties__pb2.OwnedItemsRequest.SerializeToString,
                 response_deserializer=properties__pb2.Response.FromString,
                 _registered_method=True)
+        self.GetHistoricValuations = channel.unary_unary(
+                '/realestate.PropertyService/GetHistoricValuations',
+                request_serializer=properties__pb2.SingleUnitRequest.SerializeToString,
+                response_deserializer=properties__pb2.Response.FromString,
+                _registered_method=True)
 
 
 class PropertyServiceServicer(object):
@@ -127,6 +132,12 @@ class PropertyServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetHistoricValuations(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_PropertyServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -168,6 +179,11 @@ def add_PropertyServiceServicer_to_server(servicer, server):
             'CountOwnedProperties': grpc.unary_unary_rpc_method_handler(
                     servicer.CountOwnedProperties,
                     request_deserializer=properties__pb2.OwnedItemsRequest.FromString,
+                    response_serializer=properties__pb2.Response.SerializeToString,
+            ),
+            'GetHistoricValuations': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetHistoricValuations,
+                    request_deserializer=properties__pb2.SingleUnitRequest.FromString,
                     response_serializer=properties__pb2.Response.SerializeToString,
             ),
     }
@@ -386,6 +402,33 @@ class PropertyService(object):
             target,
             '/realestate.PropertyService/CountOwnedProperties',
             properties__pb2.OwnedItemsRequest.SerializeToString,
+            properties__pb2.Response.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetHistoricValuations(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/realestate.PropertyService/GetHistoricValuations',
+            properties__pb2.SingleUnitRequest.SerializeToString,
             properties__pb2.Response.FromString,
             options,
             channel_credentials,

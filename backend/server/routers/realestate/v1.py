@@ -1,9 +1,10 @@
+from datetime import date
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
 
 from server.dependencies.auth import authenticate_user
-from server.dependencies.grpc import RealestateClient
+from server.dependencies.grpc import RealestateClient, ValuationClient
 from server.dependencies.requests import page_number
 
 
@@ -81,5 +82,16 @@ def router_factory() -> APIRouter:
     async def get_unit(client: Annotated[RealestateClient, Depends(RealestateClient)], unit_id: int):
         data = client.get_unit(unit_id=unit_id)
         return data
+
+    @router.get("/units/{unit_id}/valuations", dependencies=[Depends(authenticate_user)])
+    async def get_valuations(
+        unit_id: int,
+        date: Annotated[date | None, Query()],
+        client: Annotated[RealestateClient, Depends(RealestateClient)],
+        valuation_client: Annotated[ValuationClient, Depends(ValuationClient)],
+    ):
+        historic_data = client.get_historic_valuations(unit_id=unit_id)
+        future_data = valuation_client.get_unit_valuation(unit_id=unit_id, date=date)
+        return {"historic_data": historic_data, "future_data": future_data}
 
     return router

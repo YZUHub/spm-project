@@ -14,6 +14,7 @@ from repositories import (
     create_ad,
     delete_ad,
     get_ads,
+    get_historic_valuations,
     get_owned_properties,
     count_owned_properties,
     read_property_owner,
@@ -91,6 +92,16 @@ class PropertyService(PropertyServiceServicer):
     async def CountOwnedProperties(self, request, context):
         data = await count_owned_properties(owner_id=request.owner_id)
         return Response(data=json.dumps({"count": data}))
+
+    async def GetHistoricValuations(self, request, context) -> Response:
+        unit_id = request.unit_id
+        valuations = await get_historic_valuations(unit_id)
+
+        data = []
+        for valuation in valuations:
+            data.append(valuation.model_dump(exclude_none=True))
+
+        return Response(data=json.dumps(data))
 
 
 class AdService(AdServiceServicer):

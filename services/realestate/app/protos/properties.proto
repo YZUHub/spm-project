@@ -49,4 +49,6 @@ service PropertyService {
 
     rpc GetOwnedProperties(OwnedItemsRequest) returns (Response);
     rpc CountOwnedProperties(OwnedItemsRequest) returns (Response);
+
+    rpc GetHistoricValuations(SingleUnitRequest) returns (Response);
 }

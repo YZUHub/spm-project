@@ -1,11 +1,12 @@
 import json
+from datetime import date
 
 import grpc
 from fastapi import HTTPException, status
 from google.protobuf.json_format import MessageToDict
 
 from server.config import settings
-from server.pb import ads_pb2, ads_pb2_grpc, auth_pb2, auth_pb2_grpc, properties_pb2, properties_pb2_grpc
+from server.pb import ads_pb2, ads_pb2_grpc, auth_pb2, auth_pb2_grpc, properties_pb2, properties_pb2_grpc, valuation_pb2, valuation_pb2_grpc
 from server.schemas.requests.auth import LoginRequest, RegisterRequest
 from server.schemas.requests.ads import CreateAdRequest
 
@@ -122,6 +123,13 @@ class RealestateClient:
         except grpc.RpcError as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
 
+    def get_historic_valuations(self, unit_id: int) -> dict:
+        try:
+            response = self.properties_stub.GetHistoricValuations(properties_pb2.SingleUnitRequest(unit_id=unit_id))
+            return json.loads(response.data)
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
+
     def has_write_access(self, owner_id: str, property_id_nma: str) -> bool:
         try:
             payload = {"phone_number": owner_id, "property_id_nma": property_id_nma}
@@ -202,5 +210,28 @@ class RealestateClient:
         try:
             response = self.ads_stub.DeleteAd(ads_pb2.SingleAdRequest(id=ad_id, phone_number=owner_id, property_id_nma=property_id_nma))
             return MessageToDict(response)
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
+
+
+class ValuationClient:
+    def __init__(self):
+        self.channel = grpc.insecure_channel(f"{settings.VALUATION_SERVICE_HOST}:{settings.VALUATION_SERVICE_PORT}")
+        self.stub = valuation_pb2_grpc.ValuationServiceStub(self.channel)
+
+    def get_property_valuation(self, property_id_nma: str) -> dict:
+        try:
+            response = self.stub.GetPropertyValuation(valuation_pb2.PropertyValuationRequest(property_id_nma=property_id_nma))
+            print(response)
+            return json.loads(response.valuations)
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
+
+    def get_unit_valuation(self, unit_id: int, date: date | None = None) -> dict:
+        try:
+            date = date or date.today()
+            response = self.stub.GetUnitValuation(valuation_pb2.UnitValuationRequest(unit_id=unit_id, date=date.isoformat()))
+            print(response)
+            return json.loads(response.valuations)
         except grpc.RpcError as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
