@@ -5,7 +5,7 @@ from server.schemas.responses.health import HealthResponse
 
 
 def router_factory() -> APIRouter:
-    router = APIRouter(prefix="/health")
+    router = APIRouter(prefix="/health", tags=["Health Check"])
 
     @router.get("", response_model=HealthResponse)
     async def health():

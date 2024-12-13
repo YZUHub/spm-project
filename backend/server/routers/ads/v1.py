@@ -6,12 +6,14 @@ from server.dependencies.auth import authenticate_user
 from server.dependencies.grpc import RealestateClient
 from server.dependencies.requests import page_number
 from server.schemas.requests.ads import CreateAdRequest, UpdateAdRequest
+from server.schemas.responses import CountResponse, StatusResponse
+from server.schemas.responses.ads import Ad
 
 
 def router_factory() -> APIRouter:
-    router = APIRouter(prefix="/v1/ads")
+    router = APIRouter(prefix="/v1/ads", tags=["Realestate Advertisements Management System"])
 
-    @router.post("")
+    @router.post("", response_model=Ad)
     async def create_ad(
         payload: Annotated[CreateAdRequest, Body()],
         phone_number: Annotated[str, Depends(authenticate_user)],
@@ -19,7 +21,7 @@ def router_factory() -> APIRouter:
     ):
         return client.create_ad(payload, phone_number)
 
-    @router.get("")
+    @router.get("", response_model=list[Ad])
     async def get_ads(
         client: Annotated[RealestateClient, Depends(RealestateClient)],
         property_id_nma: Annotated[str | None, Query()] = None,
@@ -31,7 +33,7 @@ def router_factory() -> APIRouter:
     ):
         return client.get_ads(property_id_nma, type, status, min_price, max_price, page)
 
-    @router.get("/count")
+    @router.get("/count", response_model=CountResponse)
     async def count_ads(
         client: Annotated[RealestateClient, Depends(RealestateClient)],
         property_id_nma: Annotated[str | None, Query()] = None,
@@ -42,14 +44,14 @@ def router_factory() -> APIRouter:
     ):
         return client.count_ads(property_id_nma, type, status, min_price, max_price)
 
-    @router.get("/{ad_id}")
+    @router.get("/{ad_id}", response_model=Ad)
     async def get_ad(
         ad_id: str,
         client: Annotated[RealestateClient, Depends(RealestateClient)],
     ):
         return client.get_ad(ad_id)
 
-    @router.patch("/{ad_id}")
+    @router.patch("/{ad_id}", response_model=Ad)
     async def update_ad(
         ad_id: str,
         payload: Annotated[UpdateAdRequest, Body()],
@@ -59,7 +61,7 @@ def router_factory() -> APIRouter:
     ):
         return client.update_ad(ad_id, payload, phone_number, property_id_nma)
 
-    @router.delete("/{ad_id}")
+    @router.delete("/{ad_id}", response_model=StatusResponse)
     async def delete_ad(
         ad_id: str,
         property_id_nma: Annotated[str, Query(...)],

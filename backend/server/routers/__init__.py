@@ -24,6 +24,7 @@ def find_services() -> list[ModuleType]:
 async def add_endpoint_description(route: BaseRoute) -> None:
     directory = __name__.replace(".", "/")
     docs_file = f"{directory}/docs{route.path}.md"
+    print(f"Adding documentation for {route.path} from {docs_file}")
 
     try:
         # documentation is stored in a markdown file with the same path as the route in the `docs` folder

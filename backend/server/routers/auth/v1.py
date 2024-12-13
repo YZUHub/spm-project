@@ -5,13 +5,14 @@ from fastapi import APIRouter, Body, Depends, Query
 from server.dependencies.auth import authenticate_user
 from server.dependencies.grpc import AuthClient
 from server.schemas.requests.auth import LoginRequest, RegisterRequest
+from server.schemas.responses import StatusResponse
 from server.schemas.responses.auth import AuthResponse
 
 
 def router_factory() -> APIRouter:
-    router = APIRouter(prefix="/v1/auth")
+    router = APIRouter(prefix="/v1/auth", tags=["Authentication System"])
 
-    @router.get("/otp")
+    @router.get("/otp", response_model=StatusResponse)
     async def send_otp(
         phone_number: Annotated[str, Query(..., alias="phone-number", description="Phone number to send OTP to")],
         client: Annotated[AuthClient, Depends(AuthClient)],
@@ -34,8 +35,8 @@ def router_factory() -> APIRouter:
         res = client.login(payload)
         return AuthResponse(access_token=res["token"], token_type="bearer")
 
-    @router.get("/validate", dependencies=[Depends(authenticate_user)])
+    @router.get("/validate", dependencies=[Depends(authenticate_user)], response_model=StatusResponse)
     async def validate():
-        return {"message": "Validated"}
+        return {"success": True, "message": "Validated"}
 
     return router
