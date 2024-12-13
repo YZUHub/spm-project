@@ -172,3 +172,18 @@ class Property(Base):
 
     class Settings:
         name = "properties"
+
+
+class Ad(Base):
+    title: str
+    description: str
+    address: str
+    property_id_nma: str
+    price: float
+    type: str
+    status: str
+    phone_number: str
+    listed_by: str
+
+    class Settings:
+        name = "ads"
