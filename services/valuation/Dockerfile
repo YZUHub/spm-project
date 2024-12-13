@@ -15,7 +15,6 @@ RUN poetry install --no-root
 
 # Copy the rest of the application code to the working directory
 COPY ./app /app
-COPY ./models /models
 
 # Expose the port that the gRPC server will run on
 EXPOSE 50053

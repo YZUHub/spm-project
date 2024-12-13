@@ -1,7 +1,7 @@
 from beanie.operators import In
 
 import schemas
-from models import Ad, Owner, Property, Unit
+from models import Ad, Owner, Property, Unit, Valuation
 from pb.properties_pb2 import RangeQuery
 
 
@@ -231,3 +231,8 @@ async def delete_ad(ad_id: str) -> bool:
     ad = await Ad.get(ad_id)
     await ad.delete()
     return True
+
+
+async def get_historic_valuations(unit_id: int) -> list[schemas.Valuation]:
+    valuations = await Valuation.find(Valuation.unit_id == unit_id).project(schemas.Valuation).to_list()
+    return valuations

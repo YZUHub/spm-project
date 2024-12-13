@@ -189,3 +189,14 @@ class Ad(BaseModel):
     def fix_id(cls, values):
         values["id"] = str(values["id"])
         return values
+
+
+class Valuation(BaseModel):
+    unit_id: int
+    date: str
+    rental_valuation: float | None
+    rental_model_valuation: float | None
+    index_valuation: float | None
+    comparables_valuation: float | None
+    listing_valuation: float | None
+    transaction_valuation: float | None

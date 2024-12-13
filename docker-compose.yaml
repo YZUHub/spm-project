@@ -11,6 +11,8 @@ services:
       - "8000:8000"
     depends_on:
       - acl
+      - realestate
+      - valuation
 
   acl:
     build:

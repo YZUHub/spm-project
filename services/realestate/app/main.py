@@ -7,7 +7,7 @@ from grpc.experimental import aio
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from config import settings
-from models import Ad, Building, Floor, Owner, Property, Unit
+from models import Ad, Building, Floor, Owner, Property, Unit, Valuation
 from pb.ads_pb2_grpc import add_AdServiceServicer_to_server
 from pb.properties_pb2_grpc import add_PropertyServiceServicer_to_server
 from services import AdService, PropertyService
@@ -15,7 +15,7 @@ from services import AdService, PropertyService
 
 async def serve():
     client = AsyncIOMotorClient(settings.DB_URI)
-    await init_beanie(client["SPM"], document_models=[Ad, Building, Floor, Owner, Property, Unit])
+    await init_beanie(client["SPM"], document_models=[Ad, Building, Floor, Owner, Property, Unit, Valuation])
 
     server = aio.server(futures.ThreadPoolExecutor(max_workers=10))
 
