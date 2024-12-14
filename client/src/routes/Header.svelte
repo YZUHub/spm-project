@@ -22,7 +22,7 @@
 	}
 </script>
 
-<header class="bg-[var(--color-bg-1)] text-[var(--color-text)] flex justify-between items-center px-6 py-4 border-b border-[var(--color-border)]">
+<header class="bg-[var(--color-bg-1)] text-[var(--color-text)] flex justify-between items-center px-6 py-4 border-b border-[var(--color-border)] fixed top-0 left-0 right-0 z-50">
 	<!-- Left Logo with Search Bar -->
 	<div class="flex items-center space-x-4">
 		<a href="/" class="flex items-center">
