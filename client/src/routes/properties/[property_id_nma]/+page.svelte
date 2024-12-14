@@ -7,6 +7,7 @@
 	import NumberGrid from '../../../components/NumberGrid.svelte';
 
 	let propertyDetails = null;
+    let propertyAds = null;
 	let propertyId = $page.params.property_id_nma; // Fetch the dynamic ID from the route
 	let loading = true;
 
@@ -20,8 +21,42 @@
 	const ownersPerPage = 8; // Number of owners per page
 	let paginatedOwners = [];
 
+    let currentAdPage = 1;
+    const adsPerPage = 20;
+    let adCount = null;
+
 	// Number grid data
 	let gridData = [];
+
+    async function fetchPropertyAds() {
+        try {
+            const response = await fetch(`http://localhost:8000/api/v1/ads?property_id_nma=${propertyId}&page=${currentAdPage}`);
+            if (response.ok) {
+                const ads = await response.json();
+                if (ads.length > 0) {
+                    propertyAds = ads;
+                }
+            } else {
+                console.error('Failed to fetch property ads');
+            }
+        } catch (error) {
+            console.error('Error fetching property ads:', error);
+        }
+    }
+
+    async function fetchAdCounts() {
+        try {
+            const response = await fetch(`http://localhost:8000/api/v1/ads/count?property_id_nma=${propertyId}`);
+            if (response.ok) {
+                const adCounts = await response.json();
+                adCount = adCounts.count;
+            } else {
+                console.error('Failed to fetch ad counts');
+            }
+        } catch (error) {
+            console.error('Error fetching ad counts:', error);
+        }
+    }
 
 	// Fetch property details from the backend using the propertyId
 	async function fetchPropertyDetails() {
@@ -32,6 +67,10 @@
 				updatePaginatedUnits(); // Update paginated units after fetching data
 				updateGridData(); // Update the grid data
 				updatePaginatedOwners(); // Update paginated owners after fetching data
+
+                // Fetch property ads
+                fetchPropertyAds();
+                fetchAdCounts();
 			} else {
 				console.error('Failed to fetch property details');
 			}
@@ -97,6 +136,12 @@
 		updatePaginatedUnits();
 	}
 
+    function handleAdsPageChange(page) {
+        if (page > adCount / adsPerPage) return;
+        currentAdPage = page;
+        fetchPropertyAds();
+    }
+
 	// Handle page change for owners
 	function handleOwnerPageChange(page) {
 		ownerPage = page;
@@ -128,13 +173,25 @@
 				class="w-full h-full object-cover"
 			/>
 			<div class="absolute bottom-0 left-0 bg-gradient-to-t from-black/90 to-40 w-full p-4 pt-96 text-white">
-				<h1 class="text-2xl font-bold">📍{titleCase(propertyDetails.units[0].full_address)}</h1>
+				<h1 class="text-2xl font-bold">📍{propertyDetails.units[0].full_address}</h1>
 				<p class="text-lg">🔗{propertyDetails.property_id_nma} • {propertyDetails.area} m²</p>
 			</div>
 		</div>
 
 		<!-- Grid for Numbers -->
 		<NumberGrid {gridData} />
+
+        <!-- Buildings Section -->
+        {#if propertyDetails.buildings.length > 0}
+            <div class="space-y-4 mt-6">
+                <h2 class="text-xl font-semibold mb-4">Buildings</h2>
+                <div class="space-y-4">
+                    {#each propertyDetails.buildings as building}
+                        <Accordion {building} />
+                    {/each}
+                </div>
+            </div>
+        {/if}
 
 		<!-- Units Section -->
 		<h2 class="text-xl font-semibold mb-4">Units</h2>
@@ -168,14 +225,31 @@
 				</div>
 			{/each}
 		</div>
-		{#if propertyDetails.owners.length > ownersPerPage}
-			<Pagination
-				totalCount={propertyDetails.owners.length}
-				itemsPerPage={ownersPerPage}
-				bind:currentPage={ownerPage}
-				onPageChange={handleOwnerPageChange}
-			/>
-		{/if}
+        <Pagination
+            totalCount={propertyDetails.owners.length}
+            itemsPerPage={ownersPerPage}
+            bind:currentPage={ownerPage}
+            onPageChange={handleOwnerPageChange}
+        />
+
+        <!-- Listings Section -->
+		<h2 class="text-xl font-semibold mb-4">Listings</h2>
+		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+			{#each propertyAds as ad}
+				<Card
+					link={`/ads/${ad.id}`}
+					address={ad.address}
+					price={ad.price}
+                    additionalInfo={`Located at ${ad.address} is up for ${ad.type}.`}
+				/>
+			{/each}
+		</div>
+		<Pagination
+			totalCount={adCount}
+			itemsPerPage={adsPerPage}
+			bind:currentAdPage
+			onPageChange={handleAdsPageChange}
+		/>
 	</div>
 {:else}
 	<div class="flex justify-center items-center min-h-screen">
