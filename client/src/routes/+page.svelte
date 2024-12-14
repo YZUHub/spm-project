@@ -95,6 +95,14 @@
 	<div class="flex justify-center items-center min-h-screen">
 		<div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-[var(--color-bg-2)] border-t-[var(--color-accent)]"></div>
 	</div>
+{:else if totalCount === 0}
+	<!-- No Properties Message -->
+	<div class="flex flex-col items-center justify-center h-screen text-center">
+		<h1 class="text-2xl font-semibold text-[var(--color-text)] mb-4">No Properties Found</h1>
+		<p class="text-[var(--color-text-muted)] mb-4">
+			It seems there are no property information available at the moment. Please check back later!
+		</p>
+	</div>
 {:else}
 	<!-- Property Grid -->
 	<div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 p-4">
