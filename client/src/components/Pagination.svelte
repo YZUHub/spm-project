@@ -77,7 +77,7 @@
 		<!-- Next Button -->
 		<button
 			on:click={() => handlePageChange(currentPage + 1)}
-			disabled={currentPage === totalPages}
+			disabled={currentPage >= totalPages}
 			class="px-3 py-1 rounded bg-[var(--color-bg-2)] text-[var(--color-text-muted)] hover:text-[var(--color-accent)] disabled:opacity-50">
 			Next
 		</button>
