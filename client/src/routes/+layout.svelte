@@ -22,13 +22,6 @@
 		<main>
 			<slot />
 		</main>
-		{#if !isLoginPage}
-			<footer>
-				<p>
-					Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to learn about SvelteKit.
-				</p>
-			</footer>
-		{/if}
 	{/if}
 
 	{#if !authenticated && !isLoginPage}
@@ -49,28 +42,10 @@
 		flex: 1;
 		display: flex;
 		flex-direction: column;
-		padding: 1rem;
+		padding: 0;
 		width: 100%;
 		max-width: 75%;
-		margin: 0 auto;
+		margin: 5rem auto 0 auto;
 		box-sizing: border-box;
-	}
-
-	footer {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		padding: 12px;
-	}
-
-	footer a {
-		font-weight: bold;
-	}
-
-	@media (min-width: 480px) {
-		footer {
-			padding: 12px 0;
-		}
 	}
 </style>
