@@ -9,6 +9,7 @@ from server.config import settings
 from server.pb import ads_pb2, ads_pb2_grpc, auth_pb2, auth_pb2_grpc, properties_pb2, properties_pb2_grpc, valuation_pb2, valuation_pb2_grpc
 from server.schemas.requests.auth import LoginRequest, RegisterRequest
 from server.schemas.requests.ads import CreateAdRequest
+from server.schemas.responses.ads import Ad
 
 
 class AuthClient:
@@ -141,7 +142,9 @@ class RealestateClient:
     def create_ad(self, payload: CreateAdRequest, owner_id: str) -> dict:
         try:
             response = self.ads_stub.CreateAd(ads_pb2.RealEstateAd(**payload.model_dump(), phone_number=owner_id))
-            return MessageToDict(response)
+            print(response)
+            print(MessageToDict(response))
+            return Ad.model_validate(response)
         except grpc.RpcError as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
 
@@ -165,7 +168,10 @@ class RealestateClient:
             }
 
             response = self.ads_stub.GetAds(ads_pb2.FilterAdsRequest(**payload))
-            return MessageToDict(response).get("ads", [])
+            data = []
+            for ad in response.ads:
+                data.append(Ad.model_validate(ad))
+            return data
         except grpc.RpcError as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
 
@@ -194,6 +200,23 @@ class RealestateClient:
     def get_ad(self, ad_id: str) -> dict:
         try:
             response = self.ads_stub.GetAd(ads_pb2.SingleAdRequest(id=ad_id))
+            return Ad.model_validate(response)
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
+
+    def get_owned_ads(self, owner_id: str, page: int = 1) -> list[dict]:
+        try:
+            response = self.ads_stub.GetOwnedAds(ads_pb2.OwnedAdsRequest(phone_number=owner_id, page=page))
+            data = []
+            for ad in response.ads:
+                data.append(Ad.model_validate(ad))
+            return data
+        except grpc.RpcError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
+
+    def count_owned_ads(self, owner_id: str) -> dict:
+        try:
+            response = self.ads_stub.CountOwnedAds(ads_pb2.OwnedAdsRequest(phone_number=owner_id))
             return MessageToDict(response)
         except grpc.RpcError as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
@@ -202,7 +225,7 @@ class RealestateClient:
         try:
             grpc_payload = {"id": ad_id, **payload.model_dump(exclude_unset=True), "phone_number": owner_id, "property_id_nma": property_id_nma}
             response = self.ads_stub.UpdateAd(ads_pb2.RealEstateAd(**grpc_payload))
-            return MessageToDict(response)
+            return Ad.model_validate(response)
         except grpc.RpcError as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
 

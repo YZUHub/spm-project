@@ -19,7 +19,9 @@ def router_factory() -> APIRouter:
         phone_number: Annotated[str, Depends(authenticate_user)],
         client: Annotated[RealestateClient, Depends(RealestateClient)],
     ):
-        return client.create_ad(payload, phone_number)
+        res = client.create_ad(payload, phone_number)
+        print(f"{res = }")
+        return res
 
     @router.get("", response_model=list[Ad])
     async def get_ads(
@@ -32,6 +34,21 @@ def router_factory() -> APIRouter:
         page: Annotated[int, Depends(page_number)] = 1,
     ):
         return client.get_ads(property_id_nma, type, status, min_price, max_price, page)
+
+    @router.get("/me", response_model=list[Ad])
+    async def get_my_ads(
+        phone_number: Annotated[str, Depends(authenticate_user)],
+        client: Annotated[RealestateClient, Depends(RealestateClient)],
+        page: Annotated[int, Depends(page_number)] = 1,
+    ):
+        return client.get_owned_ads(phone_number, page)
+
+    @router.get("/me/count", response_model=CountResponse)
+    async def count_my_ads(
+        phone_number: Annotated[str, Depends(authenticate_user)],
+        client: Annotated[RealestateClient, Depends(RealestateClient)],
+    ):
+        return client.count_owned_ads(phone_number)
 
     @router.get("/count", response_model=CountResponse)
     async def count_ads(

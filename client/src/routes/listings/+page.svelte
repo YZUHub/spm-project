@@ -100,7 +100,7 @@
 	<div class="flex flex-col items-center justify-center h-screen text-center">
 		<h1 class="text-2xl font-semibold text-[var(--color-text)] mb-4">No Listings Found</h1>
 		<p class="text-[var(--color-text-muted)] mb-4">
-			It seems there are no listing information available at the moment. Please check back later!
+			It seems there are no listings information available at the moment. Please check back later!
 		</p>
 	</div>
 {:else}
@@ -108,10 +108,10 @@
 	<div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 p-4">
 		{#each properties as property}
 			<Card
-				link={`/properties/${property.property_id_nma}`}
+				link={`/ads/${property.id}`}
 				address={property.property_id_nma}
-				area={property.area}
-				additionalInfo={`${property.number_of_sections} units in ${property.number_of_buildings} buildings`}
+				price={property.price}
+				additionalInfo={`Located at ${property.address} is up for ${property.type}.`}
 			/>
 		{/each}
 	</div>

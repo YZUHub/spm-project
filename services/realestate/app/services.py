@@ -33,7 +33,7 @@ class PropertyService(PropertyServiceServicer):
 
         data = []
         for property in properties:
-            data.append(property.model_dump(exclude_none=True))
+            data.append(property.model_dump())
 
         return Response(data=json.dumps(data))
 
@@ -50,7 +50,7 @@ class PropertyService(PropertyServiceServicer):
             context.set_details("Property not found")
             return Response()
 
-        property_data = property.model_dump_json(exclude_none=True)
+        property_data = property.model_dump_json()
         return Response(data=property_data)
 
     async def GetPropertyUnits(self, request, context) -> Response:
@@ -59,7 +59,7 @@ class PropertyService(PropertyServiceServicer):
 
         data = []
         for unit in units:
-            data.append(unit.model_dump(exclude_none=True))
+            data.append(unit.model_dump())
 
         return Response(data=json.dumps(data))
 
@@ -76,7 +76,7 @@ class PropertyService(PropertyServiceServicer):
             context.set_details("Unit not found")
             return Response()
 
-        unit_data = unit.model_dump_json(exclude_none=True)
+        unit_data = unit.model_dump_json()
         return Response(data=unit_data)
 
     async def GetOwnedProperties(self, request, context) -> Response:
@@ -85,7 +85,7 @@ class PropertyService(PropertyServiceServicer):
 
         data = []
         for property in properties:
-            data.append(property.model_dump(exclude_none=True))
+            data.append(property.model_dump())
 
         return Response(data=json.dumps(data))
 
@@ -99,7 +99,7 @@ class PropertyService(PropertyServiceServicer):
 
         data = []
         for valuation in valuations:
-            data.append(valuation.model_dump(exclude_none=True))
+            data.append(valuation.model_dump())
 
         return Response(data=json.dumps(data))
 
@@ -147,7 +147,7 @@ class AdService(AdServiceServicer):
 
         data = []
         for ad in ads:
-            data.append(RealEstateAd(**ad.model_dump(exclude_none=True)))
+            data.append(RealEstateAd(**ad.model_dump()))
 
         return MultipleAdsResponse(ads=data)
 
@@ -161,13 +161,26 @@ class AdService(AdServiceServicer):
         )
         return CountResponse(count=data)
 
+    async def GetOwnedAds(self, request, context) -> MultipleAdsResponse:
+        ads = await get_ads(phone_number=request.phone_number, page=request.page)
+
+        data = []
+        for ad in ads:
+            data.append(RealEstateAd(**ad.model_dump()))
+
+        return MultipleAdsResponse(ads=data)
+
+    async def CountOwnedAds(self, request, context) -> CountResponse:
+        data = await count_ads(phone_number=request.phone_number)
+        return CountResponse(count=data)
+
     async def UpdateAd(self, request, context) -> RealEstateAd:
         has_permission = await check_permission(owner_id=request.phone_number, property_id_nma=request.property_id_nma)
         if not has_permission:
             context.set_code(grpc.StatusCode.PERMISSION_DENIED)
             context.set_details("Owner does not have permission to update ad for this property")
             return RealEstateAd()
-        
+
         updated_ad = await update_ad(
             ad_id=request.id,
             title=request.title,
