@@ -134,8 +134,8 @@ class RealestateClient:
     def has_write_access(self, owner_id: str, property_id_nma: str) -> bool:
         try:
             payload = {"phone_number": owner_id, "property_id_nma": property_id_nma}
-            response = self.properties_stub.HasWriteAccess(properties_pb2.SingleAdRequest(**payload))
-            return response.success
+            response = self.ads_stub.HasWriteAccess(ads_pb2.SingleAdRequest(**payload))
+            return response
         except grpc.RpcError as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
 
