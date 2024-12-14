@@ -21,6 +21,11 @@ message SingleAdRequest {
     string phone_number = 3;
 }
 
+message OwnedAdsRequest {
+    string phone_number = 1;
+    int32 page = 2;
+}
+
 message FilterAdsRequest {
     string property_id_nma = 1;
     string type = 2;
@@ -47,6 +52,8 @@ service AdService {
     rpc GetAd(SingleAdRequest) returns (RealEstateAd);
     rpc GetAds(FilterAdsRequest) returns (MultipleAdsResponse);
     rpc CountAds(FilterAdsRequest) returns (CountResponse);
+    rpc GetOwnedAds(OwnedAdsRequest) returns (MultipleAdsResponse);
+    rpc CountOwnedAds(OwnedAdsRequest) returns (CountResponse);
     rpc UpdateAd(RealEstateAd) returns (RealEstateAd);
     rpc DeleteAd(SingleAdRequest) returns (StatusResponse);
     rpc HasWriteAccess(SingleAdRequest) returns (StatusResponse);

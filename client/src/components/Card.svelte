@@ -2,6 +2,7 @@
 	export let link = '#'; // Link to the property details page
 	export let address = ''; // Property address
 	export let area = ''; // Property area
+	export let price = ''; // Property price
 	export let additionalInfo = ''; // Optional additional information
 </script>
 
@@ -14,7 +15,14 @@
 	<!-- Property Information -->
 	<div class="card-content p-4">
 		<h2 class="text-lg font-bold">{address}</h2>
-		<p class="text-sm text-[var(--color-text-muted)] mt-1">{area}</p>
+		{#if area !== ''}
+			<p class="text-sm text-[var(--color-text-muted)] mt-1">{area}</p>
+		{/if}
+
+		{#if price !== ''}
+			<p class="text-lg font-semibold mt-2 text-[var(--color-text-muted)]">Price: ${price}</p>
+		{/if}
+
 		{#if additionalInfo}
 			<p class="text-sm text-[var(--color-text)] mt-2">{additionalInfo}</p>
 		{/if}

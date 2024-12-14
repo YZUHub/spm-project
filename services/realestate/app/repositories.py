@@ -146,6 +146,7 @@ async def read_single_ad(ad_id: str) -> schemas.Ad:
 
 async def get_ads(
     property_id_nma: str | None = None,
+    phone_number: str | None = None,
     type: str | None = None,
     status: str | None = None,
     min_price: float | None = None,
@@ -156,6 +157,8 @@ async def get_ads(
 
     if property_id_nma:
         query["property_id_nma"] = property_id_nma
+    if phone_number:
+        query["phone_number"] = phone_number
     if type:
         query["type"] = type
     if status:
@@ -168,12 +171,14 @@ async def get_ads(
         if max_price:
             query["price"]["$lte"] = max_price
 
+    print(f"{query = }")
     ads = await Ad.find(query).skip((page - 1) * 20).limit(20).to_list()
     return [schemas.Ad(**ad.model_dump()) for ad in ads]
 
 
 async def count_ads(
     property_id_nma: str | None = None,
+    phone_number: str | None = None,
     type: str | None = None,
     status: str | None = None,
     min_price: float | None = None,
@@ -183,6 +188,8 @@ async def count_ads(
 
     if property_id_nma:
         query["property_id_nma"] = property_id_nma
+    if phone_number:
+        query["phone_number"] = phone_number
     if type:
         query["type"] = type
     if status:
@@ -195,6 +202,7 @@ async def count_ads(
         if max_price:
             query["price"]["$lte"] = max_price
 
+    print(f"{query = }")
     ads = await Ad.find(query).count()
     return ads
 

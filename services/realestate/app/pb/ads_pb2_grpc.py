@@ -54,6 +54,16 @@ class AdServiceStub(object):
                 request_serializer=ads__pb2.FilterAdsRequest.SerializeToString,
                 response_deserializer=ads__pb2.CountResponse.FromString,
                 _registered_method=True)
+        self.GetOwnedAds = channel.unary_unary(
+                '/ads.AdService/GetOwnedAds',
+                request_serializer=ads__pb2.OwnedAdsRequest.SerializeToString,
+                response_deserializer=ads__pb2.MultipleAdsResponse.FromString,
+                _registered_method=True)
+        self.CountOwnedAds = channel.unary_unary(
+                '/ads.AdService/CountOwnedAds',
+                request_serializer=ads__pb2.OwnedAdsRequest.SerializeToString,
+                response_deserializer=ads__pb2.CountResponse.FromString,
+                _registered_method=True)
         self.UpdateAd = channel.unary_unary(
                 '/ads.AdService/UpdateAd',
                 request_serializer=ads__pb2.RealEstateAd.SerializeToString,
@@ -98,6 +108,18 @@ class AdServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetOwnedAds(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def CountOwnedAds(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def UpdateAd(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -137,6 +159,16 @@ def add_AdServiceServicer_to_server(servicer, server):
             'CountAds': grpc.unary_unary_rpc_method_handler(
                     servicer.CountAds,
                     request_deserializer=ads__pb2.FilterAdsRequest.FromString,
+                    response_serializer=ads__pb2.CountResponse.SerializeToString,
+            ),
+            'GetOwnedAds': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetOwnedAds,
+                    request_deserializer=ads__pb2.OwnedAdsRequest.FromString,
+                    response_serializer=ads__pb2.MultipleAdsResponse.SerializeToString,
+            ),
+            'CountOwnedAds': grpc.unary_unary_rpc_method_handler(
+                    servicer.CountOwnedAds,
+                    request_deserializer=ads__pb2.OwnedAdsRequest.FromString,
                     response_serializer=ads__pb2.CountResponse.SerializeToString,
             ),
             'UpdateAd': grpc.unary_unary_rpc_method_handler(
@@ -262,6 +294,60 @@ class AdService(object):
             target,
             '/ads.AdService/CountAds',
             ads__pb2.FilterAdsRequest.SerializeToString,
+            ads__pb2.CountResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetOwnedAds(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ads.AdService/GetOwnedAds',
+            ads__pb2.OwnedAdsRequest.SerializeToString,
+            ads__pb2.MultipleAdsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def CountOwnedAds(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ads.AdService/CountOwnedAds',
+            ads__pb2.OwnedAdsRequest.SerializeToString,
             ads__pb2.CountResponse.FromString,
             options,
             channel_credentials,
