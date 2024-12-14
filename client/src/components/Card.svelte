@@ -16,11 +16,11 @@
 	<div class="card-content p-4">
 		<h2 class="text-lg font-bold">{address}</h2>
 		{#if area !== ''}
-			<p class="text-sm text-[var(--color-text-muted)] mt-1">{area}</p>
+			<p class="text-sm font-semibold mt-2 text-[var(--color-text-muted)]"><strong>Area:</strong> {area} m²</p>
 		{/if}
 
 		{#if price !== ''}
-			<p class="text-lg font-semibold mt-2 text-[var(--color-text-muted)]">Price: ${price}</p>
+			<p class="text-sm font-semibold mt-2 text-[var(--color-text-muted)]"><strong>Price:</strong> ${price}</p>
 		{/if}
 
 		{#if additionalInfo}
