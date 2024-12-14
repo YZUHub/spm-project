@@ -194,62 +194,68 @@
         {/if}
 
 		<!-- Units Section -->
-		<h2 class="text-xl font-semibold mb-4">Units</h2>
-		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-			{#each paginatedUnits as unit}
-				<Card
-					link={`/units/${unit.unit_id}`}
-					address={unit.address}
-					area={unit.bra}
-					price={unit.index_valuation}
-					additionalInfo={unit.additional_info}
-				/>
-			{/each}
-		</div>
-		<Pagination
-			totalCount={propertyDetails.units.length}
-			itemsPerPage={itemsPerPage}
-			bind:currentPage
-			onPageChange={handlePageChange}
-		/>
+		{#if propertyDetails.units.length > 0}
+			<h2 class="text-xl font-semibold mb-4">Units</h2>
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+				{#each paginatedUnits as unit}
+					<Card
+						link={`/units/${unit.unit_id}`}
+						address={unit.address}
+						area={unit.bra}
+						price={unit.index_valuation}
+						additionalInfo={unit.additional_info}
+					/>
+				{/each}
+			</div>
+			<Pagination
+				totalCount={propertyDetails.units.length}
+				itemsPerPage={itemsPerPage}
+				bind:currentPage
+				onPageChange={handlePageChange}
+			/>
+		{/if}
 
 		<!-- Owners Section -->
-		<h2 class="text-xl font-semibold mb-4">Owners</h2>
-		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4">
-			{#each paginatedOwners as owner}
-				<div class="bg-[var(--color-bg-2)] p-4 rounded-lg shadow-md transition-transform transform hover:scale-105 hover:shadow-lg">
-					<p class="text-md font-semibold mb-2"><strong>Name:</strong> {titleCase(owner.name)}</p>
-					<p class="text-sm text-[var(--color-text-muted)]">
-						<strong>Phone Number:</strong> {owner.phone_number || 'N/A'}
-					</p>
-				</div>
-			{/each}
-		</div>
-        <Pagination
-            totalCount={propertyDetails.owners.length}
-            itemsPerPage={ownersPerPage}
-            bind:currentPage={ownerPage}
-            onPageChange={handleOwnerPageChange}
-        />
+		{#if propertyDetails.owners.length > 0}
+			<h2 class="text-xl font-semibold mb-4">Owners</h2>
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+				{#each paginatedOwners as owner}
+					<div class="bg-[var(--color-bg-2)] p-4 rounded-lg shadow-md transition-transform transform hover:scale-105 hover:shadow-lg">
+						<p class="text-md font-semibold mb-2"><strong>Name:</strong> {titleCase(owner.name)}</p>
+						<p class="text-sm text-[var(--color-text-muted)]">
+							<strong>Phone Number:</strong> {owner.phone_number || 'N/A'}
+						</p>
+					</div>
+				{/each}
+			</div>
+			<Pagination
+				totalCount={propertyDetails.owners.length}
+				itemsPerPage={ownersPerPage}
+				bind:currentPage={ownerPage}
+				onPageChange={handleOwnerPageChange}
+			/>
+		{/if}
 
         <!-- Listings Section -->
-		<h2 class="text-xl font-semibold mb-4">Listings</h2>
-		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-			{#each propertyAds as ad}
-				<Card
-					link={`/ads/${ad.id}`}
-					address={ad.address}
-					price={ad.price}
-                    additionalInfo={`Located at ${ad.address} is up for ${ad.type}.`}
-				/>
-			{/each}
-		</div>
-		<Pagination
-			totalCount={adCount}
-			itemsPerPage={adsPerPage}
-			bind:currentAdPage
-			onPageChange={handleAdsPageChange}
-		/>
+		{#if propertyAds && propertyAds.length > 0}
+			<h2 class="text-xl font-semibold mb-4">Listings</h2>
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+				{#each propertyAds as ad}
+					<Card
+						link={`/ads/${ad.id}`}
+						address={ad.address}
+						price={ad.price}
+						additionalInfo={`Located at ${ad.address} is up for ${ad.type}.`}
+					/>
+				{/each}
+			</div>
+			<Pagination
+				totalCount={adCount}
+				itemsPerPage={adsPerPage}
+				bind:currentAdPage
+				onPageChange={handleAdsPageChange}
+			/>
+		{/if}
 	</div>
 {:else}
 	<div class="flex justify-center items-center min-h-screen">

@@ -4,7 +4,7 @@ from server.schemas import BaseResponseSchema
 
 
 class CountResponse(BaseResponseSchema):
-    count: int = Field(..., description="Number of items")
+    count: int = Field(0, description="Number of items")
 
 
 class StatusResponse(BaseResponseSchema):
