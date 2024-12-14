@@ -4,6 +4,7 @@
     import NumberGrid from '../../../components/NumberGrid.svelte';
     import Card from '../../../components/Card.svelte';
     import Pagination from '../../../components/Pagination.svelte';
+	import ValuationChart from '../../../components/ValuationChart.svelte';
 
     let unitId = $page.params.unit_id;
     let loading = true;
@@ -85,8 +86,8 @@
 
         let rawGridData = [];
         rawGridData.push({ value: `${unitDetails.floor_number}`, label: 'On Floor' });
-        rawGridData.push({ value: `${unitDetails.land_area}`, label: 'Property Land Area' });
-        rawGridData.push({ value: `${unitDetails.bra}`, label: 'Built Residential Area' });
+        rawGridData.push({ value: `${unitDetails.land_area} m²`, label: 'Property Land Area' });
+        rawGridData.push({ value: `${unitDetails.bra} m²`, label: 'Built Residential Area' });
         rawGridData.push({ value: `${unitDetails.rooms}`, label: 'Number of Rooms' });
         rawGridData.push({ value: `${unitDetails.bedrooms}`, label: 'Number of Bedrooms' });
         rawGridData.push({ value: `${unitDetails.bathrooms}`, label: 'Number of Bathrooms' });
@@ -140,6 +141,9 @@
 
 		<!-- Grid for Numbers -->
 		<NumberGrid {gridData} />
+
+        <h2 class="text-xl font-semibold mb-4">Valuations</h2>
+        <ValuationChart unitId={unitId} />
 
         <!-- Listings Section -->
         {#if paginatedAds.length > 0}

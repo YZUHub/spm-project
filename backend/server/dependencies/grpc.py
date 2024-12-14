@@ -245,7 +245,6 @@ class ValuationClient:
     def get_property_valuation(self, property_id_nma: str) -> dict:
         try:
             response = self.stub.GetPropertyValuation(valuation_pb2.PropertyValuationRequest(property_id_nma=property_id_nma))
-            print(response)
             return json.loads(response.valuations)
         except grpc.RpcError as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())
@@ -254,7 +253,6 @@ class ValuationClient:
         try:
             date = date or date.today()
             response = self.stub.GetUnitValuation(valuation_pb2.UnitValuationRequest(unit_id=unit_id, date=date.isoformat()))
-            print(response)
             return json.loads(response.valuations)
         except grpc.RpcError as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.details())

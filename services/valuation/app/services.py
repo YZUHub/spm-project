@@ -27,16 +27,22 @@ class ValuationService(ValuationServiceServicer):
     def calculate_valuations(self, index_data: list[dict]) -> list[dict]:
         today = date.today()
         year = today.year
-        inflation_rate = 0.05
+        inflation_rate = 0.3
         valuations = []
 
         for index in index_data:
-            inflation_parameter = (index["year"] - year) * inflation_rate
+            difference = index["year"] - year
+            if difference < 2:
+                inflation_parameter = (index["year"] - year + 3 - difference) * inflation_rate
+            elif difference < 4:
+                inflation_parameter = (index["year"] - year + 1.5) * inflation_rate
+            else:
+                inflation_parameter = (index["year"] - year + 0.5) * inflation_rate
             index["index"] = index["index"] * (1 + inflation_parameter)
 
             valuation = {**index}
             for key in self.valuation_types:
-                disturbance = random.uniform(-0.005, 0.005)
+                disturbance = random.uniform(0.05, 0.07)
                 valuation[key] = index["index"] * self.valuation_rates[index["index_id"]][key] * (1 + disturbance)
             valuations.append(valuation)
         return valuations
