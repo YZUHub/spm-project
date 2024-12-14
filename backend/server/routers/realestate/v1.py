@@ -85,7 +85,7 @@ def router_factory() -> APIRouter:
         data = client.get_unit(unit_id=unit_id)
         return data
 
-    @router.get("/units/{unit_id}/valuations", dependencies=[Depends(authenticate_user)], response_model=list[Valuation])
+    @router.get("/units/{unit_id}/valuations",  response_model=list[Valuation])
     async def get_valuations(
         unit_id: int,
         date: Annotated[date | None, Query()],
