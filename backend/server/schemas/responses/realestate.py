@@ -61,7 +61,7 @@ class Building(BaseResponseSchema):
     locality_number: int | None = Field(None, description="The number of the locality")
     cultural_monument_number: str | None = Field(None, description="The number of the cultural monument")
     geometry: PointGeometry = Field(default_factory=dict, description="The geographical location of the building")
-    floor_data: list = Field(default_factory=list, description="The details of the floors in the building")
+    floor_data: list[Floor] | None = Field(default=None, description="The details of the floors in the building")
 
 
 class Unit(BaseResponseSchema):
@@ -140,9 +140,9 @@ class Property(BaseResponseSchema):
     city_district_id: int | None = Field(None, description="The identification number of the city district where the property is located")
     city_district_name: str | None = Field(None, description="The name of the city district where the property is located")
     geometry: PointGeometry = Field(..., description="The geographical location of the property")
-    buildings: list[Building] = Field(default_factory=list, description="The details of the buildings in the property")
-    owners: list[Owner] = Field(default_factory=list, description="The details of the owners of the property")
-    units: list[Unit] = Field(default_factory=list, description="The details of the units in the property")
+    buildings: list[Building] | None = Field(default=None, description="The details of the buildings in the property")
+    owners: list[Owner] | None = Field(default=None, description="The details of the owners of the property")
+    units: list[Unit] | None = Field(default=None, description="The details of the units in the property")
 
 
 class Valuation(BaseResponseSchema):

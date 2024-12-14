@@ -6,7 +6,7 @@ from pb.properties_pb2 import RangeQuery
 
 
 async def read_single_property(property_id_nma: str) -> schemas.PropertyDetail:
-    property = await Property.find(Property.property_id_nma == property_id_nma, fetch_links=True).project(schemas.Property).first_or_none()
+    property = await Property.find(Property.property_id_nma == property_id_nma, fetch_links=True).project(schemas.PropertyDetail).first_or_none()
     return property
 
 
