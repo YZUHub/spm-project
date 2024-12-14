@@ -3,6 +3,23 @@
 	import logo from '$lib/images/svelte-logo.svg';
 	import { FaExternalLinkAlt } from 'svelte-icons/fa';
 	import NavButton from '../components/NavButton.svelte';
+	import { isAuthenticated, user } from '../stores/auth.js';
+
+	let loggedIn = false;
+	isAuthenticated.subscribe(value => {
+		loggedIn = value;
+	});
+
+	let userDetails = null;
+	user.subscribe(value => {
+		userDetails = value;
+	});
+
+	function logout() {
+		isAuthenticated.set(false);
+		user.set(null);
+		window.location.href = '/login';
+	}
 </script>
 
 <header class="bg-[var(--color-bg-1)] text-[var(--color-text)] flex justify-between items-center px-6 py-4 border-b border-[var(--color-border)]">
@@ -20,20 +37,23 @@
 		</div>
 	</div>
 
-	<!-- Center Buttons -->
-	<nav>
-		<ul class="flex space-x-8">
-			<NavButton label="Properties" link="/" />
-			<NavButton label="Listings" link="/listings" />
-			<NavButton label="API Sale" link="http://127.0.0.1:8000/docs" target="_blank" icon={FaExternalLinkAlt} />
-		</ul>
-	</nav>
+	{#if loggedIn}
+		<!-- Center Buttons -->
+		<nav>
+			<ul class="flex space-x-8">
+				<NavButton label="Properties" link="/" />
+				<NavButton label="Listings" link="/listings" />
+				<NavButton label="API Sale" link="http://127.0.0.1:8000/docs" target="_blank" icon={FaExternalLinkAlt} />
+			</ul>
+		</nav>
 
-	<!-- Right Buttons for User -->
-	<div class="flex space-x-4">
-		<ul class="flex space-x-4">
-			<NavButton label="My Properties" link="/properties/me" />
-			<NavButton label="My Listings" link="/listings/me" />
-		</ul>
-	</div>
+		<!-- Right Buttons for User -->
+		<div class="flex space-x-4">
+			<ul class="flex space-x-4">
+				<NavButton label="My Properties" link="/properties/me" />
+				<NavButton label="My Listings" link="/listings/me" />
+				<button on:click={logout} class="px-4 py-2 text-lg bg-red-500 text-white rounded-lg">Logout</button>
+			</ul>
+		</div>
+	{/if}
 </header>

@@ -1,22 +1,41 @@
 <script>
 	import Header from './Header.svelte';
 	import '../app.css';
+	import { page } from '$app/stores';
+	import { isAuthenticated, user } from '../stores/auth.js';
 
-	let { children } = $props();
+	let authenticated;
+	let userDetails;
+
+	// Use Svelte's `$` syntax for reactivity
+	$: authenticated = $isAuthenticated;
+	$: userDetails = $user;
+
+	const isLoginPage = $page.url.pathname === '/login';
 </script>
 
 <div class="app">
-	<Header />
+	{#if authenticated || isLoginPage}
+		{#if !isLoginPage}
+			<Header />
+		{/if}
+		<main>
+			<slot />
+		</main>
+		{#if !isLoginPage}
+			<footer>
+				<p>
+					Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to learn about SvelteKit.
+				</p>
+			</footer>
+		{/if}
+	{/if}
 
-	<main>
-		{@render children()}
-	</main>
-
-	<footer>
-		<p>
-			visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to learn about SvelteKit
-		</p>
-	</footer>
+	{#if !authenticated && !isLoginPage}
+		<script>
+			window.location.href = '/login';
+		</script>
+	{/if}
 </div>
 
 <style>

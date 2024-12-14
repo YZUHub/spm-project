@@ -8,5 +8,5 @@ class CountResponse(BaseResponseSchema):
 
 
 class StatusResponse(BaseResponseSchema):
-    success: str = Field(..., description="Status of the request")
+    success: bool = Field(..., description="Status of the request")
     message: str | None = Field(None, description="Message from the server")
