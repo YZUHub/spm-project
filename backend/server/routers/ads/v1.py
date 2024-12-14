@@ -35,6 +35,14 @@ def router_factory() -> APIRouter:
     ):
         return client.get_ads(property_id_nma, type, status, min_price, max_price, page)
 
+    @router.get("/has-access", response_model=StatusResponse)
+    async def has_access(
+        phone_number: Annotated[str, Depends(authenticate_user)],
+        property_id_nma: Annotated[str, Query(...)],
+        client: Annotated[RealestateClient, Depends(RealestateClient)],
+    ):
+        return client.has_write_access(phone_number, property_id_nma)
+
     @router.get("/me", response_model=list[Ad])
     async def get_my_ads(
         phone_number: Annotated[str, Depends(authenticate_user)],
