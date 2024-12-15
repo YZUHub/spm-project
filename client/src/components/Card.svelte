@@ -19,7 +19,7 @@
 			<p class="text-sm font-semibold mt-2 text-[var(--color-text-muted)]"><strong>Area:</strong> {area} m²</p>
 		{/if}
 
-		{#if price !== ''}
+		{#if price}
 			<p class="text-sm font-semibold mt-2 text-[var(--color-text-muted)]"><strong>Price:</strong> NOK {price.toLocaleString()}</p>
 		{/if}
 
