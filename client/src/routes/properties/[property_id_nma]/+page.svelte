@@ -9,6 +9,7 @@
 
 	let propertyDetails = null;
     let propertyAds = null;
+	let similarUnits = null;
 	let propertyId = $page.params.property_id_nma; // Fetch the dynamic ID from the route
 	let loading = true;
 
@@ -99,6 +100,11 @@
                 // Fetch property ads
                 fetchPropertyAds();
                 fetchAdCounts();
+
+				similarUnits = propertyDetails.units.filter(unit => unit.property_id_nma !== propertyId).slice(0, 4);
+				if (similarUnits.length < 4) {
+                    similarUnits.push(...propertyDetails.units.slice(0, 4 - similarUnits.length));
+                }
 			} else {
 				console.error('Failed to fetch property details');
 			}
@@ -298,6 +304,19 @@
 				bind:currentAdPage
 				onPageChange={handleAdsPageChange}
 			/>
+		{/if}
+
+		{#if similarUnits && similarUnits.length > 0}
+			<h2 class="text-xl font-semibold mb-4">Similar Properties</h2>
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+				{#each similarUnits as unit}
+					<Card
+						link={`/listings/${unit.unit_id}`}
+						address={unit.address}
+						area={unit.bra}
+					/>
+				{/each}
+			</div>
 		{/if}
 	</div>
 {:else}

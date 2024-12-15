@@ -11,6 +11,7 @@
 
     let unitDetails = null;
     let propertyDetails = null;
+    let similarUnits = null;
 
     let gridData = [];
 
@@ -30,6 +31,7 @@
                 updateGridData();
                 fetchAdCounts();
                 fetchAds();
+                fetchSimilarUnits();
             } else {
                 console.log('Error fetching unit details');
             }
@@ -44,6 +46,27 @@
             if (response.ok) {
                 propertyDetails = await response.json();
                 loading = false;
+            } else {
+                console.log('Error fetching property details');
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function fetchSimilarUnits() {
+        try {
+            const response = await fetch(`http://localhost:8000/api/v1/spm/properties/${unitDetails.property_id_nma_main}`);
+            if (response.ok) {
+                let data = await response.json();
+                // take units that have a different property_id_nma from the current unit from data.units array
+                similarUnits = data.units.filter(unit => unit.property_id_nma !== unitDetails.property_id_nma).slice(0, 4);
+                console.log(`Similar Units before: ${similarUnits.length}`);
+                // if length of similarUnits is less than 4, add the remaining from data.units array
+                if (similarUnits.length < 4) {
+                    similarUnits.push(...data.units.slice(0, 4 - similarUnits.length));
+                }
+                console.log(`Similar Units after: ${similarUnits.length}`);
             } else {
                 console.log('Error fetching property details');
             }
@@ -151,7 +174,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {#each paginatedAds as ad}
                     <Card
-                        link={`/ads/${ad.id}`}
+                        link={`/listings/${ad.id}`}
                         address={ad.address}
                         price={ad.price}
                         additionalInfo={`Located at ${ad.address} is up for ${ad.type}.`}
@@ -165,5 +188,18 @@
                 onPageChange={handleAdsPageChange}
             />
         {/if}
+
+        {#if similarUnits && similarUnits.length > 0}
+			<h2 class="text-xl font-semibold mb-4">Similar Properties</h2>
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+				{#each similarUnits as unit}
+					<Card
+						link={`/listings/${unit.unit_id}`}
+						address={unit.address}
+						area={unit.bra}
+					/>
+				{/each}
+			</div>
+		{/if}
     </div>
 {/if}
