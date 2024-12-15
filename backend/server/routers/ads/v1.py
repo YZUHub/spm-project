@@ -95,7 +95,7 @@ def router_factory() -> APIRouter:
     ):
         return client.delete_ad(ad_id, phone_number, property_id_nma)
 
-    @router.get("/description/{property_id_nma}")
+    @router.get("/description/{property_id_nma}", dependencies=[Depends(authenticate_user)], response_model=StatusResponse)
     async def get_description(
         property_id_nma: str,
         client: Annotated[RealestateClient, Depends(RealestateClient)],

@@ -100,7 +100,7 @@
         <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-[var(--color-bg-2)] border-t-[var(--color-accent)]"></div>
     </div>
 {:else if hasWriteAccess}
-    <ListingForm onSubmit={handleFormSubmit} listing={adDetails} isUpdate={true} />
+    <ListingForm onSubmit={handleFormSubmit} listing={adDetails} isUpdate={true} token={userDetails.token} propertyId={propertyId} />
 {:else}
     <div class="flex justify-center items-center min-h-screen">
         <p class="text-xl text-[var(--color-text-muted)]">You do not have permission to create a listing for this property</p>

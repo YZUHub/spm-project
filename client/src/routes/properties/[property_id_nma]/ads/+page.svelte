@@ -61,7 +61,7 @@
 </script>
 
 {#if hasWriteAccess}
-    <ListingForm onSubmit={handleFormSubmit} listing={ { property_id_nma: $page.params.property_id_nma } } />
+    <ListingForm onSubmit={handleFormSubmit} listing={{ property_id_nma: $page.params.property_id_nma }} token={userDetails.token} />
 {:else}
     <div class="flex justify-center items-center min-h-screen">
         <p class="text-xl text-[var(--color-text-muted)]">You do not have permission to create a listing for this property</p>
