@@ -20,7 +20,7 @@
 		{/if}
 
 		{#if price !== ''}
-			<p class="text-sm font-semibold mt-2 text-[var(--color-text-muted)]"><strong>Price:</strong> ${price}</p>
+			<p class="text-sm font-semibold mt-2 text-[var(--color-text-muted)]"><strong>Price:</strong> NOK {price.toLocaleString()}</p>
 		{/if}
 
 		{#if additionalInfo}
