@@ -20,6 +20,9 @@ class AppConfig(BaseSettings):
     VALUATION_SERVICE_HOST: str
     VALUATION_SERVICE_PORT: int
 
+    # GAN API settings
+    GAN_API_KEY: str
+
     model_config = SettingsConfigDict(
         env_file_encoding="utf-8",
         env_file=".env",
