@@ -1,11 +1,16 @@
 <script>
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
+    import { user } from '../../../stores/auth.js';
 
     const id = $page.params.id;
 
     let adDetails = null;
     let loading = true;
+
+    let hasWriteAccess = false;
+	let userDetails;
+	$: userDetails = $user; // Reactive store subscription
 
     // Fetch the ad details from the backend using the ID from the route
     async function fetchAdDetails(id) {
@@ -13,6 +18,7 @@
             const response = await fetch(`http://localhost:8000/api/v1/ads/${id}`);
             if (response.ok) {
                 adDetails = await response.json();
+                checkWriteAccess(adDetails.property_id_nma);
             } else {
                 console.log('Failed to fetch ad details');
             }
@@ -22,6 +28,28 @@
             loading = false;
         }
     }
+
+    async function checkWriteAccess(propertyId) {
+		try {
+			const response = await fetch(`http://localhost:8000/api/v1/ads/has-access?property_id_nma=${propertyId}`, {
+				method: 'GET',
+				headers: {
+					Authorization: `${userDetails.token}`, // Include token in the Authorization header
+					'Content-Type': 'application/json',
+				},
+			});
+			if (response.ok) {
+				const data = await response.json();
+				hasWriteAccess = data.success;
+			} else {
+				console.error('Failed to check write access');
+				return false;
+			}
+		} catch (error) {
+			console.error('Error checking write access:', error);
+			return false;
+		}
+	}
 
     onMount(() => {
         fetchAdDetails(id);
@@ -37,16 +65,31 @@
     <div class="p-8 space-y-6">
         <!-- Property Image -->
         <div class="relative w-full h-96 rounded-lg overflow-hidden shadow-md">
-            <img
-                src="/property-placeholder.jpg"
-                alt="Property"
-                class="w-full h-full object-cover"
-            />
-            <div class="absolute bottom-0 left-0 bg-gradient-to-t from-black/90 to-40 w-full p-4 pt-96 text-white">
-                <h1 class="text-2xl font-bold">📍{adDetails.address}</h1>
-                <p class="text-lg">🔗{adDetails.property_id_nma} • NOK {adDetails.price.toLocaleString()}</p>
-            </div>
-        </div>
+			<img
+				src="/property-placeholder.jpg"
+				alt="Property"
+				class="w-full h-full object-cover"
+			/>
+			<div class="absolute flex justify-between bottom-0 left-0 bg-gradient-to-t from-black/90 to-40 w-full p-4 pt-96 text-white">
+				<!-- Centered Full Address -->
+				<div class="absolute bottom-16 left-1/2 transform -translate-x-1/2 text-center">
+					<h1 class="text-2xl font-bold">📍{adDetails.address}</h1>
+				</div>
+				<!-- Left Details -->
+				<div>
+					<p class="text-lg text-white">🔗{adDetails.property_id_nma} • NOK {adDetails.price.toLocaleString()}</p>
+				</div>
+				<!-- Button on the right side -->
+				{#if hasWriteAccess}
+					<a
+						href={`/listings/${adDetails.id}/edit`}
+						class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition hover:no-underline"
+					>
+						Edit Listing
+					</a>
+				{/if}
+			</div>
+		</div>
 
         <!-- Title, Type, Status, Price, and Link -->
         <div class="space-y-4">

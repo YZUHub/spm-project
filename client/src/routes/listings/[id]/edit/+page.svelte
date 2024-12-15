@@ -8,10 +8,45 @@
     let userDetails;
 	$: userDetails = $user; // Reactive store subscription
 
+    const id = $page.params.id;
+    let propertyId = null;
+    $: console.log(propertyId);
+
+    let adDetails = null;
+    let loading = true;
+
+    // Fetch the ad details from the backend using the ID from the route
+    async function fetchAdDetails(id) {
+        try {
+            const response = await fetch(`http://localhost:8000/api/v1/ads/${id}`);
+            if (response.ok) {
+                // only keep title, description, price, address, type, and status from the response into adDetails
+                let data = await response.json();
+                console.log(data);
+                adDetails = {
+                    title: data.title,
+                    description: data.description,
+                    price: data.price,
+                    address: data.address,
+                    type: data.type,
+                    status: data.status
+                };
+                propertyId = data.property_id_nma;
+                console.log(adDetails);
+            } else {
+                console.log('Failed to fetch ad details');
+            }
+        } catch (err) {
+            console.log('Error fetching ad details');
+        } finally {
+            loading = false;
+        }
+    }
+
     async function handleFormSubmit(newListing) {
         try {
-            const response = await fetch('http://localhost:8000/api/v1/ads', {
-                method: 'POST',
+            const response = await fetch(`http://localhost:8000/api/v1/ads/${id}?property_id_nma=${propertyId}`, {
+                method: 'PATCH',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `${userDetails.token}` },
                 body: JSON.stringify(newListing)
             });
@@ -53,15 +88,19 @@
 	}
 
     let hasWriteAccess = false;
-    let propertyId = $page.params.property_id_nma;
 
     onMount(async () => {
+        await fetchAdDetails(id);
         await checkWriteAccess();
     });
 </script>
 
-{#if hasWriteAccess}
-    <ListingForm onSubmit={handleFormSubmit} listing={ { property_id_nma: $page.params.property_id_nma } } />
+{#if loading}
+    <div class="flex justify-center items-center min-h-screen">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-[var(--color-bg-2)] border-t-[var(--color-accent)]"></div>
+    </div>
+{:else if hasWriteAccess}
+    <ListingForm onSubmit={handleFormSubmit} listing={adDetails} isUpdate={true} />
 {:else}
     <div class="flex justify-center items-center min-h-screen">
         <p class="text-xl text-[var(--color-text-muted)]">You do not have permission to create a listing for this property</p>
