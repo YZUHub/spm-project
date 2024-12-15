@@ -17,10 +17,10 @@
     }
 </script>
 
-<div class="flex justify-center items-center min-h-screen bg-gray-800">
+<div class="flex justify-center items-center min-h-screen pb-8 pt-8 bg-gray-800">
     <form on:submit={handleSubmit} class="shadow-md rounded-lg w-full max-w-4xl space-y-6">
         <h1 class="text-2xl font-semibold text-gray-200">
-            {listing.id ? 'Edit Listing' : 'Create New Listing'}
+            {isUpdate ? 'Edit Listing' : 'Create New Listing'}
         </h1>
 
         <!-- Title -->
@@ -107,7 +107,7 @@
             type="submit"
             class="w-full p-3 bg-blue-500 hover:bg-blue-600 rounded-lg text-white font-semibold transition-colors"
         >
-            {listing.id ? 'Update Listing' : 'Create Listing'}
+            {isUpdate ? 'Update Listing' : 'Create Listing'}
         </button>
     </form>
 </div>
