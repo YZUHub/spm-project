@@ -311,7 +311,7 @@
 			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 				{#each similarUnits as unit}
 					<Card
-						link={`/listings/${unit.unit_id}`}
+						link={`/units/${unit.unit_id}`}
 						address={unit.address}
 						area={unit.bra}
 					/>
