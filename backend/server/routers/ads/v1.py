@@ -8,6 +8,7 @@ from server.dependencies.requests import page_number
 from server.schemas.requests.ads import CreateAdRequest, UpdateAdRequest
 from server.schemas.responses import CountResponse, StatusResponse
 from server.schemas.responses.ads import Ad
+from server.utils import get_listing_description
 
 
 def router_factory() -> APIRouter:
@@ -20,7 +21,6 @@ def router_factory() -> APIRouter:
         client: Annotated[RealestateClient, Depends(RealestateClient)],
     ):
         res = client.create_ad(payload, phone_number)
-        print(f"{res = }")
         return res
 
     @router.get("", response_model=list[Ad])
@@ -94,5 +94,13 @@ def router_factory() -> APIRouter:
         client: Annotated[RealestateClient, Depends(RealestateClient)],
     ):
         return client.delete_ad(ad_id, phone_number, property_id_nma)
+
+    @router.get("/description/{property_id_nma}")
+    async def get_description(
+        property_id_nma: str,
+        client: Annotated[RealestateClient, Depends(RealestateClient)],
+    ):
+        property = client.get_property(property_id_nma)
+        return get_listing_description(property)
 
     return router
