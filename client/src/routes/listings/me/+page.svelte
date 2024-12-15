@@ -108,7 +108,7 @@
 	<div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 p-4">
 		{#each properties as property}
 			<Card
-				link={`/ads/${property.id}`}
+				link={`/listings/${property.id}`}
 				address={property.property_id_nma}
 				price={property.price}
 				additionalInfo={`Located at ${property.address} is up for ${property.type}.`}
