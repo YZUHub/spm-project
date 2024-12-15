@@ -112,5 +112,5 @@ def get_listing_description(property: dict) -> str:
     prompt = " ".join(prompts)[:-1]
 
     client = cohere.Client(settings.GAN_API_KEY)
-    response = client.generate(model="command", prompt=prompt, max_tokens=3000, temperature=0.9, k=0, stop_sequences=[], return_likelihoods='NONE')
-    return {"description": response.generations[0].text}
+    response = client.generate(model="command", prompt=prompt, max_tokens=300, temperature=0.9, k=0, stop_sequences=[], return_likelihoods='NONE')
+    return {"message": response.generations[0].text, "success": True}

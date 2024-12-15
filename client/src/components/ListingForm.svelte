@@ -10,6 +10,38 @@
 
     export let onSubmit;
     export let isUpdate = false;
+    export let token;
+    export let propertyId = null;
+
+    let generatedDescription = null;
+    let loadingDescription = false;
+
+    async function getSuggestedDescription() {
+        try {
+            loadingDescription = true; // Show a loading state for the button
+            const id = listing.property_id_nma || propertyId;
+            const response = await fetch(`http://localhost:8000/api/v1/ads/description/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `${token}`,
+                },
+            });
+            if (response.ok) {
+                let data = await response.json();
+                generatedDescription = data.message;
+
+                // Populate the description field with the generated data
+                listing.description = generatedDescription;
+            } else {
+                console.log('Error fetching suggested description');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        } finally {
+            loadingDescription = false; // Reset the button state
+        }
+    }
 
     function handleSubmit(event) {
         event.preventDefault();
@@ -47,6 +79,17 @@
                 rows="10"
                 required
             ></textarea>
+            <!-- Generate Button -->
+            <div class="flex justify-end mt-2">
+                <button
+                    type="button"
+                    on:click={getSuggestedDescription}
+                    class="px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg text-white font-semibold transition-colors"
+                    disabled={loadingDescription}
+                >
+                    {loadingDescription ? 'Generating...' : 'Generate'}
+                </button>
+            </div>
         </div>
 
         <!-- Address -->
